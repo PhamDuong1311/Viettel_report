@@ -23,9 +23,13 @@ https://www.informit.com/articles/article.aspx?p=169505&seqNum=3
 ### 1.4 Byte ordering functions
 Không phải tất cả máy tính đều lưu trữ các byte tạo nên giá trị đa byte theo cùng một thứ tự. Hãy xem xét một mạng internet 16 bit được tạo thành từ 2 byte. Có hai cách để lưu trữ giá trị này:
 
-Little Endian − Byte bậc thấp được lưu trữ ở địa chỉ bắt đầu (A) và byte bậc cao được lưu trữ ở địa chỉ tiếp theo (A + 1).
+- **Little Endian** − Byte bậc thấp được lưu trữ ở địa chỉ bắt đầu (A) và byte bậc cao được lưu trữ ở địa chỉ tiếp theo (A + 1).
 
-Big Endian − Byte bậc cao được lưu trữ ở địa chỉ bắt đầu (A) và byte bậc thấp được lưu trữ ở địa chỉ tiếp theo (A + 1).
+- **Big Endian** − Byte bậc cao được lưu trữ ở địa chỉ bắt đầu (A) và byte bậc thấp được lưu trữ ở địa chỉ tiếp theo (A + 1).
+
+Để cho phép các máy có quy ước thứ tự byte khác nhau giao tiếp với nhau, các giao thức Internet chỉ định một quy ước thứ tự byte chuẩn cho dữ liệu được truyền qua mạng. Quy ước này được gọi là **Network Byte Order**.
+
+Khi thiết lập kết nối socket Internet, bạn phải đảm bảo rằng dữ liệu trong các thành viên sin_port và sin_addr của cấu trúc sockaddr_in được biểu diễn trong Network Byte Order.
 ### 1.5 inet_aton, inet_addr, inet_ntoa functions
 ### 1.6 inet_pton, inet_ntop functions
 ### 1.7 sock_ntop and related functions
