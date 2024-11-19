@@ -147,12 +147,14 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 - Nếu chuyển đổi thành công, hàm trả về con trỏ đến chuỗi ký tự đại diện cho địa chỉ IP.
 - Nếu có lỗi, hàm trả về NULL và thiết lập errno.
 ### 1.7 sock_ntop and related functions
-Hàm inet_ntop có 1 vấn đề là nó yêu cầu truyền pointer vào địa chỉ binary. Địa chỉ này yêu cầu người gọi hàm biết cấu trúc của hắn (`struct sockaddr_in` cho IPv4 hay struct sockaddr_in6 cho IPv6) và địa chỉ family (IPv4: AF_INET, IPv6: AF_INET6) => Khi làm việc với một struct sockaddr, phải tự tay kiểm tra sa_family (là AF_INET hay AF_INET6) để quyết định cách xử lý => Điều này dẫn đến mã nguồn dài dòng và dễ nhầm lẫn, đặc biệt khi cần hỗ trợ cả IPv4 và IPv6.
+Hàm inet_ntop có 1 vấn đề là nó yêu cầu truyền pointer vào địa chỉ binary. Địa chỉ này yêu cầu người gọi hàm biết cấu trúc của hắn (`struct sockaddr_in` cho IPv4 hay 'struct sockaddr_in6' cho IPv6) và địa chỉ family (IPv4: AF_INET, IPv6: AF_INET6) => Khi làm việc với một struct sockaddr, phải tự tay kiểm tra sa_family (là AF_INET hay AF_INET6) để quyết định cách xử lý => Điều này dẫn đến mã nguồn dài dòng và dễ nhầm lẫn, đặc biệt khi cần hỗ trợ cả IPv4 và IPv6.
 
-=> Hàm sock_ntop (dù không phải chuẩn) khắc phục nhược điểm này bằng cách:
+=> Hàm sock_ntop khắc phục nhược điểm này bằng cách:
 - Nhận trực tiếp một con trỏ tới struct sockaddr.
 - Tự động kiểm tra sa_family để quyết định xử lý IPv4 hay IPv6.
 - Kết hợp cả địa chỉ IP và port vào chuỗi kết quả.
+
+Hàm sock_ntop không phải hàm chuẩn (sử dụng trong include "unp.h" để dễ tái sử dụng), sử dụng static memory để lưu kết quả => giá trị trả về luôn cùng 1 bộ nhớ (dễ lỗi).
 
 **Syntax**:
 ```c
@@ -167,7 +169,21 @@ const char *sock_ntop(const struct sockaddr *sa, socklen_t salen);
 - Hàm này sẽ trả về một chuỗi chứa địa chỉ mạng ở dạng chuỗi (địa chỉ IP với cổng).
 - Nếu có lỗi trong quá trình chuyển đổi, nó sẽ trả về NULL.
 ### 1.8 readn, writen and readline functions
+Là những hàm trong bối cảnh UNP để xử lý input, output cho stream socket. Không như file I/O, socket I/O có hàm đọc và viết chỉ có thể xử lý 1 phần data do giới hạn của kernel buffer (để viết/đọc hết data thì cần thử lại hàm nhiều lần).
+#### a. readn
+Hàm này được thiết kế để đảm bảo đọc chính xác n bytes từ một descriptor (như file descriptor hoặc socket), bất kể dữ liệu thực sự có sẵn ngay lập tức hay không.
 
+**Syntax**: ```c ssize_t readn(int fd, void *buf, size_t n); ```
+#### b. writen
+Hàm này đảm bảo ghi chính xác n bytes từ bộ nhớ đến descriptor, khắc phục vấn đề write có thể không ghi hết dữ liệu trong một lần gọi.
+
+**Syntax**: ```c ssize_t writen(int fd, const void *buf, size_t n); ```
+#### c. readline
+Hàm này đọc dữ liệu từ fd từng byte một cho đến khi gặp:
+- Ký tự xuống dòng (\n).
+- Hoặc hết bộ đệm/dữ liệu.
+
+**Syntax**: ```c ssize_t readline(int fd, void *buf, size_t maxlen); ```
 ## 2. Socket TCP
 
 ## 3. Socket UDP
