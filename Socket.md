@@ -48,21 +48,25 @@ Hàm inet_aton chuyển đổi một địa chỉ IP dưới dạng ASCII string
 ```c
 int inet_aton(const char *cp, struct in_addr *inp);
 ```
-**Tham số:**
-
-cp: Một chuỗi ký tự đại diện cho địa chỉ IP dưới dạng ASCII (ví dụ: "192.168.1.1").
-
-inp: Con trỏ đến cấu trúc in_addr (đại diện cho địa chỉ IP dưới dạng nhị phân).
-
-**Giải thích:**
-
-Nếu chuyển đổi thành công, hàm trả về 1, và địa chỉ IP nhị phân được lưu trữ trong inp.
-
-Nếu có lỗi (địa chỉ IP không hợp lệ), hàm trả về 0.
-
+**Argument:**
+- cp: Một chuỗi ký tự đại diện cho địa chỉ IP dưới dạng ASCII (ví dụ: "192.168.1.1").
+- inp: Con trỏ đến cấu trúc in_addr (đại diện cho địa chỉ IP dưới dạng nhị phân).
+**Return:**
+- Nếu chuyển đổi thành công, hàm trả về 1, và địa chỉ IP nhị phân được lưu trữ trong inp.
+- Nếu có lỗi (địa chỉ IP không hợp lệ), hàm trả về 0.
 #### b. inet_addr
-Hàm inet_addr chuyển đổi một địa chỉ IP dưới dạng chuỗi ký tự (dạng "xxx.xxx.xxx.xxx") thành địa chỉ IP nhị phân dưới dạng kiểu in_addr_t.
+Hàm inet_addr chuyển đổi một địa chỉ IP dưới dạng ASCII string (dạng "xxx.xxx.xxx.xxx") thành địa chỉ IP nhị phân dưới dạng kiểu in_addr_t (dạng Network Byte Order).
+```c
+in_addr_t inet_addr(const char *cp);
+```
+**Argument:**
 
+- cp: Chuỗi ký tự đại diện cho địa chỉ IP (ví dụ: "192.168.1.1").
+  
+Giải thích:
+
+Hàm trả về địa chỉ IP dưới dạng kiểu in_addr_t (thường là kiểu unsigned long).
+Nếu địa chỉ IP không hợp lệ, hàm trả về giá trị đặc biệt INADDR_NONE, thường có giá trị là 0xFFFFFFFF.
 #### c. inet_ntoa
 ### 1.6 inet_pton, inet_ntop functions
 ### 1.7 sock_ntop and related functions
