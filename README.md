@@ -5,10 +5,18 @@ Socket là phương tiện cho phép giao tiếp giữa hai tiến trình khác 
 ### 1.2 Socket address structure
 Hầu hết các hàm socket đều yêu cầu một con trỏ đến cấu trúc địa chỉ socket làm đối số. Mỗi bộ giao thức được hỗ trợ đều định nghĩa cấu trúc địa chỉ socket riêng. Tên của các cấu trúc này bắt đầu bằng sockaddr_ và kết thúc bằng hậu tố duy nhất cho mỗi bộ giao thức.
 #### a. IPv4 socket address structure
-Cấu trúc địa chỉ socket IPv4, thường được gọi là "cấu trúc địa chỉ socket Internet", được đặt tên là sockaddr_in và được định nghĩa bằng cách bao gồm tiêu đề <netinet/in.h>
+Cấu trúc địa chỉ socket IPv4, thường được gọi là "cấu trúc địa chỉ socket Internet", được đặt tên là sockaddr_in và được định nghĩa bằng cách include <netinet/in.h>
 
 ![image](https://github.com/user-attachments/assets/542f083d-5f27-4262-b119-82ef6f40d301)
 #### b. General socket address structure
+Cấu trúc địa chỉ socket luôn được truyền theo tham chiếu khi được truyền dưới dạng đối số cho bất kỳ hàm socket nào. Nhưng bất kỳ hàm socket nào lấy một trong những con trỏ này làm đối số phải xử lý các cấu trúc địa chỉ socket từ bất kỳ họ giao thức nào được hỗ trợ.
+Một vấn đề phát sinh trong cách khai báo loại con trỏ được truyền. Với ANSI C, giải pháp rất đơn giản: void * là loại con trỏ chung. Nhưng các hàm socket có trước ANSI C và giải pháp được chọn vào năm 1982 là định nghĩa một cấu trúc địa chỉ socket chung trong tiêu đề <sys/socket.h>.
+
+![image](https://github.com/user-attachments/assets/adabe647-3cc9-4aa9-964a-207d6d44eab9)
+#### c. IPv6 socket address struture
+Địa chỉ socket IPv6 được xác định bằng cách include <netinet/in.h>
+
+![image](https://github.com/user-attachments/assets/9a44f9f4-0b35-45c5-ae98-e12fa30df250)
 
 ### 1.3 Value-result arguments
 ### 1.4 Byte ordering functions
