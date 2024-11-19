@@ -22,24 +22,18 @@ Một vấn đề phát sinh trong cách khai báo loại con trỏ được tru
 https://www.informit.com/articles/article.aspx?p=169505&seqNum=3
 ### 1.4 Byte ordering functions
 Không phải tất cả máy tính (Host) đều lưu trữ các byte tạo nên giá trị multiple-byte theo cùng một thứ tự. Xét một mạng internet 16 bit được tạo thành từ 2 byte. Có hai cách để lưu trữ giá trị này:
-
 - **Little Endian** − Byte bậc thấp được lưu trữ ở địa chỉ bắt đầu (A) và byte bậc cao được lưu trữ ở địa chỉ tiếp theo (A + 1).
-
 - **Big Endian** − Byte bậc cao được lưu trữ ở địa chỉ bắt đầu (A) và byte bậc thấp được lưu trữ ở địa chỉ tiếp theo (A + 1).
-
+  
 Để cho phép các máy có quy ước thứ tự byte khác nhau giao tiếp với nhau, các giao thức Internet chỉ định một quy ước thứ tự byte chuẩn cho dữ liệu được truyền qua mạng. Quy ước này được gọi là **Network Byte Order**.
 
 Khi thiết lập kết nối socket Internet, bạn phải đảm bảo rằng dữ liệu trong các thành viên sin_port và sin_addr của cấu trúc sockaddr_in (hoặc cấu trúc khác) được biểu diễn trong Network Byte Order.
 #### Byte ordering functions
 
 ![image](https://github.com/user-attachments/assets/8ead5bdf-6fac-48eb-aaa6-960485cc1846)
-
  - unsigned short htons(unsigned short hostshort) − Hàm chuyển đổi 16-bit (2-byte) từ host byte order sang network byte order.
-  
  - unsigned long htonl(unsigned long hostlong) − Hàm chuyển đổi 32-bit (4-byte) từ host byte order sang network byte order.
-  
  - unsigned short ntohs(unsigned short netshort) − Hàm chuyển đổi 16-bit (2-byte) từ network byte order sang host byte order.
-  
  - unsigned long ntohl(unsigned long netlong) − Hàm chuyển đổi 32-bit (4-byte) từ network byte order sang host byte order.
 ### 1.5 inet_aton, inet_addr, inet_ntoa functions
 Các hàm inet_aton, inet_addr, và inet_ntoa là các hàm liên quan đến việc chuyển đổi địa chỉ IP giữa các dạng khác nhau trong lập trình mạng. Các hàm này được định nghĩa trong thư viện <arpa/inet.h>.
@@ -51,6 +45,7 @@ int inet_aton(const char *cp, struct in_addr *inp);
 **Argument:**
 - cp: Một chuỗi ký tự đại diện cho địa chỉ IP dưới dạng ASCII (ví dụ: "192.168.1.1").
 - inp: Con trỏ đến cấu trúc in_addr (đại diện cho địa chỉ IP dưới dạng nhị phân).
+  
 **Return:**
 - Nếu chuyển đổi thành công, hàm trả về 1, và địa chỉ IP nhị phân được lưu trữ trong inp.
 - Nếu có lỗi (địa chỉ IP không hợp lệ), hàm trả về 0.
@@ -60,13 +55,11 @@ Hàm inet_addr chuyển đổi một địa chỉ IP dưới dạng ASCII string
 in_addr_t inet_addr(const char *cp);
 ```
 **Argument:**
-
 - cp: Chuỗi ký tự đại diện cho địa chỉ IP (ví dụ: "192.168.1.1").
   
-Giải thích:
-
-Hàm trả về địa chỉ IP dưới dạng kiểu in_addr_t (thường là kiểu unsigned long).
-Nếu địa chỉ IP không hợp lệ, hàm trả về giá trị đặc biệt INADDR_NONE, thường có giá trị là 0xFFFFFFFF.
+**Return:**
+- Hàm trả về địa chỉ IP dưới dạng kiểu in_addr_t (thường là kiểu unsigned long).
+- Nếu địa chỉ IP không hợp lệ, hàm trả về giá trị đặc biệt INADDR_NONE, thường có giá trị là 0xFFFFFFFF.
 #### c. inet_ntoa
 ### 1.6 inet_pton, inet_ntop functions
 ### 1.7 sock_ntop and related functions
