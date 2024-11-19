@@ -334,16 +334,21 @@ Gọi 1 trong 6 hàm `exec()` là **cách dùng duy nhất** để 1 chương tr
 Là việc sử dụng `fork()` để tạo ra các bản sao của parent proccess để xử lý mỗi yêu cầu của client:
 
 ![image](https://github.com/user-attachments/assets/18b64263-75f4-4bd0-8841-c37b65c7cb35)
+
 Hình 4.14: Đây là trạng thái client/server trước khi gọi `accept()` return.
 
 ![image](https://github.com/user-attachments/assets/2e33a99e-2d68-4b00-93c6-14668affce85)
+
 Hình 4.15: Đây là sự kết nối được `accept()` bởi kernel và 1 socket mớ được tạo ra (connfd).
 
 ![image](https://github.com/user-attachments/assets/e718b29f-f4b0-4774-8e98-49b4a392d2c8)
+
 Hình 4.16: Đây là trạng thái sau khi họi `fork()` trong concurrent server. Thông báo rằng cả 2 socket descriptor (listenfd và connfd) được share (duplicate) giữa parent và child.
 
 ![image](https://github.com/user-attachments/assets/fb3a271e-e488-4ad8-a170-d8f95c306265)
+
 Hình 4.17: Parent `close()` socket đã kết nốt và child `close()` socket đang lắng nghe.
+
 ### 2.8 `close` function
 Đóng socket và giải phóng tài nguyên.
 
@@ -357,5 +362,9 @@ int close(int sockfd);
 **Return**:
 - 0 nếu thành công.
 - -1 nếu lỗi.
+
+### 2.9 `getsockname` and `getpeername` functions
+
 ## 3. I/O multiplexing: `select` and `poll` functions
+
 ## 4. Socket UDP
