@@ -256,7 +256,8 @@ int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 - Nếu client muốn kết nối tới 1 service (giả sử port 80) của server, client nhờ thằng ku kernel chọn 1 ephemeral port cho nó làm source port (giả sử 52000). Sau đó gửi từ 52000 -> 80 để yêu cầu kết nối, server sẽ phản hồi từ 80 -> 52000 (server sẽ `bind()` reserved port của nó khi bắt đầu)
 - Tương tự port, ở client, thằng kernel cũng tự động gán cho thằng client 1 cái source IP address dựa trên outgoing interface. Còn ở server, server sẽ `bind()` và gán specific IP address cho socket nó đẻ ra. Nếu server không `bind()`, kernel sẽ sử dụng destination IP address của client gửi đến qua gói `SYN` (trong TCP's 3-way) (tức là server sẽ xử lý mọi Ip mà không ràng buộc như specific IP address => khó quản lý => nên hơi lỏ :v)
 
-![image](https://github.com/user-attachments/assets/29b075c3-519e-4e5e-a317-b9afea103a9e)
+![image](https://github.com/user-attachments/assets/ff42558c-a2cf-4c4c-a1de-16be7202c63e)
+
 
 ### 2.4 `listen` function
 **Syntax**:
