@@ -71,7 +71,7 @@ Khi thiết lập kết nối socket Internet, bạn phải đảm bảo rằng 
  - unsigned short ntohs(unsigned short netshort) − Hàm chuyển đổi 16-bit (2-byte) từ network byte order sang host byte order.
  - unsigned long ntohl(unsigned long netlong) − Hàm chuyển đổi 32-bit (4-byte) từ network byte order sang host byte order.
 ### 1.5 `inet_aton`, `inet_addr`, `inet_ntoa` functions
-    Các hàm `inet_aton`, `inet_addr`, và `inet_ntoa` là các hàm liên quan đến việc chuyển đổi địa chỉ IP giữa các dạng khác nhau trong lập trình mạng. Các hàm này được định nghĩa trong thư viện <arpa/inet.h>.
+Các hàm `inet_aton`, `inet_addr`, và `inet_ntoa` là các hàm liên quan đến việc chuyển đổi địa chỉ IP giữa các dạng khác nhau trong lập trình mạng. Các hàm này được định nghĩa trong thư viện <arpa/inet.h>.
 #### a. `inet_aton`
 Hàm `inet_aton` chuyển đổi một địa chỉ IP dưới dạng ASCII string (dạng "xxx.xxx.xxx.xxx") thành dạng Network Byte Order (đã định nghĩa ở phần trên) binary (dạng `in_addr`).
 
