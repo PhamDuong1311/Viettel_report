@@ -22,6 +22,7 @@ Một vấn đề phát sinh trong cách khai báo loại con trỏ được tru
 https://www.informit.com/articles/article.aspx?p=169505&seqNum=3
 ### 1.4 Byte ordering functions
 Không phải tất cả máy tính đều lưu trữ các byte tạo nên giá trị đa byte theo cùng một thứ tự. Hãy xem xét một mạng internet 16 bit được tạo thành từ 2 byte. Có hai cách để lưu trữ giá trị này:
+
 Little Endian − Byte bậc thấp được lưu trữ ở địa chỉ bắt đầu (A) và byte bậc cao được lưu trữ ở địa chỉ tiếp theo (A + 1).
 
 Big Endian − Byte bậc cao được lưu trữ ở địa chỉ bắt đầu (A) và byte bậc thấp được lưu trữ ở địa chỉ tiếp theo (A + 1).
