@@ -86,7 +86,7 @@ int inet_aton(const char *cp, struct in_addr *inp);
 **Return:**
 - Nếu chuyển đổi thành công, hàm trả về 1, và địa chỉ IP nhị phân được lưu trữ trong inp.
 - Nếu có lỗi (địa chỉ IP không hợp lệ), hàm trả về 0.
-#### b. inet_addr
+#### b. `inet_addr`
 Hàm `inet_addr` chuyển đổi một địa chỉ IP dưới dạng ASCII string (dạng "xxx.xxx.xxx.xxx") thành địa chỉ IP nhị phân dưới dạng kiểu `in_addr_t` (dạng Network Byte Order).
 
 **Syntax**:
@@ -99,7 +99,7 @@ in_addr_t inet_addr(const char *cp);
 **Return:**
 - Hàm trả về địa chỉ IP dưới dạng kiểu `in_addr_t` (thường là kiểu unsigned long).
 - Nếu địa chỉ IP không hợp lệ, hàm trả về giá trị đặc biệt `INADDR_NONE`, thường có giá trị là `0xFFFFFFFF`.
-#### c. inet_ntoa
+#### c. `inet_ntoa`
 Hàm `inet_ntoa` chuyển đổi một địa chỉ IP nhị phân (dạng `in_addr`) thành ASCII string (dạng "xxx.xxx.xxx.xxx").
 
 **Syntax**:
@@ -197,5 +197,12 @@ ssize_t readline(int fd, void *buf, size_t maxlen);
 
 ![image](https://github.com/user-attachments/assets/37440647-d979-4f57-bd74-64b224959f34)
 ### 2.1 `socket` function
-
-## 3. Socket UDP
+### 2.2 `connect` function
+### 2.3 `blind` function
+### 2.4 `listen` function
+### 2.5 `accept` function
+### 2.6 `fork` and `exec` functions
+### 2.7 Concurrent servers
+### 2.8 `close` function
+## 3. I/O multiplexing: `select` and `poll` functions
+## 4. Socket UDP
