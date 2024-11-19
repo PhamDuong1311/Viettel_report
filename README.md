@@ -6,6 +6,7 @@ Socket là phương tiện cho phép giao tiếp giữa hai tiến trình khác 
 Hầu hết các hàm socket đều yêu cầu một con trỏ đến cấu trúc địa chỉ socket làm đối số. Mỗi bộ giao thức được hỗ trợ đều định nghĩa cấu trúc địa chỉ socket riêng. Tên của các cấu trúc này bắt đầu bằng sockaddr_ và kết thúc bằng hậu tố duy nhất cho mỗi bộ giao thức.
 #### a. IPv4 socket address structure
 Cấu trúc địa chỉ socket IPv4, thường được gọi là "cấu trúc địa chỉ socket Internet", được đặt tên là sockaddr_in và được định nghĩa bằng cách bao gồm tiêu đề <netinet/in.h>
+
 ![image](https://github.com/user-attachments/assets/542f083d-5f27-4262-b119-82ef6f40d301)
 #### b. General socket address structure
 
