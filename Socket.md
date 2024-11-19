@@ -218,7 +218,8 @@ int socket(int domain, int type, int protocol);
 - Yêu cầu thiết lập kết nối đến server.
 - Nếu `connect()` = 1 => `socket()` không sử dụng được nữa và phải `close()`.
 - Không thể gọi `connect()` lại trên `socket()` (mà phải gọi lại socket nếu trong vòng lặp).
-- `connect()` khởi tạo TCP (three-way handshake)
+- `connect()` khởi tạo TCP (three-way handshake).
+  
 **Syntax**:
 ```c
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
@@ -232,7 +233,11 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 - 0 nếu thành công.
 - -1 nếu lỗi.
 ### 2.3 `blind` function
-Gắn socket với một địa chỉ IP và port cụ thể.
+**Note**:
+- Gắn socket với một địa chỉ IP và port cụ thể.
+- Định nghĩa 1 số term quan trọng:
+  + Em
+  + a
 
 **Argument**:
 ```c
