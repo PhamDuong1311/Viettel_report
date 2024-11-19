@@ -197,10 +197,6 @@ ssize_t readline(int fd, void *buf, size_t maxlen);
 
 ![image](https://github.com/user-attachments/assets/37440647-d979-4f57-bd74-64b224959f34)
 ### 2.1 `socket` function
-**Note**:
-- Tạo một socket để giao tiếp qua mạng (gọi bởi server và client).
-- `socket()` không chỉ ra data đến từ đâu (cũng như gửi từ đâu), nó chỉ tạo ra 1 interface.
-
 **Syntax**:
 ```c
 int socket(int domain, int type, int protocol);
@@ -213,14 +209,13 @@ int socket(int domain, int type, int protocol);
 **Return**:
 - File descriptor của socket (>= 0) nếu thành công.
 - -1 nếu lỗi.
-### 2.2 `connect` function
+
 **Note**:
-- Yêu cầu thiết lập kết nối đến server.
-- Nếu `connect()` = 1 => `socket()` không sử dụng được nữa và phải `close()`.
-- Không thể gọi `connect()` lại trên `socket()` (mà phải gọi lại socket nếu trong vòng lặp).
-- `connect()` khởi tạo TCP (three-way handshake).
-  
-**Syntax**:
+- Tạo một socket để giao tiếp qua mạng (gọi bởi server và client).
+- `socket()` không chỉ ra data đến từ đâu (cũng như gửi từ đâu), nó chỉ tạo ra 1 interface.
+
+### 2.2 `connect` function
+ **Syntax**:
 ```c
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 ```
@@ -232,14 +227,15 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 **Return**:
 - 0 nếu thành công.
 - -1 nếu lỗi.
-### 2.3 `blind` function
-**Note**:
-- Gắn socket với một địa chỉ IP và port cụ thể.
-- Định nghĩa 1 số term quan trọng:
-  + Em
-  + a
 
-**Argument**:
+**Note**:
+- Yêu cầu thiết lập kết nối đến server.
+- Nếu `connect()` = 1 => `socket()` không sử dụng được nữa và phải `close()`.
+- Không thể gọi `connect()` lại trên `socket()` (mà phải gọi lại socket nếu trong vòng lặp).
+- `connect()` khởi tạo TCP (three-way handshake).
+
+### 2.3 `blind` function
+**Syntax**:
 ```c
 int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 ```
@@ -251,9 +247,18 @@ int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 **Return**:
 - 0 nếu thành công.
 - -1 nếu lỗi.
-### 2.4 `listen` function
-Đánh dấu socket để bắt đầu chờ kết nối đến từ client.
 
+**Note**:
+- Gắn socket với một địa chỉ IP và port cụ thể.
+- Định nghĩa 1 số term quan trọng:
+  + **Ephemeral port** (49152 - 65535): là 1 cổng tạm thời (tự động gán cho client bởi kernel chọn khi muốn kết nối với server)
+  + **Reserved port** (0 - 1023): cổng chuẩn của từng service
+- Nếu client muốn kết nối tới 1 service (giả sử port 80) của server, client nhờ thằng ku kernel chọn 1 ephemeral port cho nó làm source port (giả sử 52000). Sau đó gửi từ 52000 -> 80 để yêu cầu kết nối, server sẽ phản hồi từ 80 -> 52000 (server sẽ `bind()` reserved port của nó khi bắt đầu)
+- Tương tự port, ở client, thằng kernel cũng tự động gán cho thằng client 1 cái source IP address dựa trên outgoing interface. Còn ở server, server sẽ `bind()` và gán specific IP address cho socket nó đẻ ra. Nếu server không `bind()`, kernel sẽ sử dụng destination IP address của client gửi đến qua gói `SYN` (trong TCP's 3-way) (tức là server sẽ xử lý mọi Ip mà không ràng buộc như specific IP address => khó quản lý => nên hơi lỏ :v)
+
+![image](https://github.com/user-attachments/assets/29b075c3-519e-4e5e-a317-b9afea103a9e)
+
+### 2.4 `listen` function
 **Syntax**:
 ```c
 int listen(int sockfd, int backlog);
@@ -265,6 +270,18 @@ int listen(int sockfd, int backlog);
 **Return**:
 - 0 nếu thành công.
 - -1 nếu lỗi.
+
+**Note**: 
+- Đánh dấu socket để bắt đầu chờ kết nối đến từ client.
+- Hàm `listen()` thực hiện 2 hành động:
+  + Chuyển socket thành passive: chức năng này ở trên socket thông báo cho kernel rằng socket sẵn sàng nhận yêu cầu kết nối từ client.
+  + Xác định số lượng kết nối tối đa: sử dụng đối số backlog lưu các kết nối vào `queue`.
+- Kernel duy trì 2 queue:
+  + Incomplete connection queue: chứa các entry cho mỗi `SYN` từ client đến rồi và server đang chờ hoàn tất TCP's 3-way.
+  + Complete connection queue: chứa các đàu mục cho mỗi client hoàn thành TCP's 3-way.
+
+![image](https://github.com/user-attachments/assets/10bdb507-e323-40b1-a6ea-bdbb97d5a049)
+
 ### 2.5 `accept` function
 Chấp nhận một kết nối từ client.
 
