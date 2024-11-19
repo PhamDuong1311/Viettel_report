@@ -283,8 +283,6 @@ int listen(int sockfd, int backlog);
 ![image](https://github.com/user-attachments/assets/10bdb507-e323-40b1-a6ea-bdbb97d5a049)
 
 ### 2.5 `accept` function
-Chấp nhận một kết nối từ client.
-
 **Syntax**:
 ```c
 int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
@@ -297,8 +295,55 @@ int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
 **Return**:
 - File descriptor của socket mới cho kết nối đã chấp nhận.
 - -1 nếu lỗi.
+
+**Note**: 
+- Chấp nhận một kết nối từ client.
+- Hàm `accept()` cho phép chấp nhận các kết nối từ client và tạo 1 descriptor mới cho client này kernel (descriptor mới đó là connected socket)
+
 ### 2.6 `fork` and `exec` functions
+#### a. `fork` function
+**Syntax**:
+```c
+pid_t fork(void);
+```
+
+**Return**:
+- Trả về `pid_t`:
+  + Trong tiến trình cha: trả về ID của tiến trình con (PID của tiến trình con).
+  + Trong tiến trình con: trả về 0.
+  + Nếu gặp lỗi: trả về -1.
+  
+**Note**:
+- Khi `fork()` được gọi, nó sẽ trả về 2 proccess:
+  + Parent proccess: trẻ về proccess IP của child proccess mới tạo ra.
+  + Child proccess: trả về 0 (mà không trả về PID của parent vì child chỉ có 1 parent, còn parent thì nhiều child - điều hiển nhiên :V)
+- Tính năng chính của `fork()`: Shared file descriptor: tất cả các descriptor mở trong parent trước khi gọi `fork()` được share với child sau khi trả về của `fork()`. Parent sau khi `accept()` kết nối và `fork()` cho 1 child xử lý từng kết nối trong khi parent sẽ `listen()` 1 cái mới.
+- Các ứng dụng:
+  + Concurrent operation: Sử dụng các copy (child) của nó để xử lý các task (sẽ trình bày ở phần sau).
+  + Executing new program: Sử dụng các copy của nó gọi `exec()` để thay memory space của nó với chương trình mới (eg. shell).
+#### b. `exec` function
+Gọi 1 trong 6 hàm `exec()` là **cách dùng duy nhất** để 1 chương trình có thể thực thi trên đĩa bởi Unix. `exec()` thay thế proccess image hiện tại bằng program file mới (PID không cần thay đổi) và bắt đầu thực thi tại `main()` (`exec()` không tạo ra proccess mới, nó thay đổi chương trình trong proccess hiện tại)
+
+**Return**:
+- Nếu thành công: không trả về giá trị vì tiến trình hiện tại bị thay thế bởi tiến trình mới.
+- Nếu thất bại: trả về -1 và thiết lập errno để chỉ rõ lỗi.
+
+![image](https://github.com/user-attachments/assets/53ad1517-58b7-454d-b372-fbb2d29dadcd)
+
 ### 2.7 Concurrent servers
+Là việc sử dụng `fork()` để tạo ra các bản sao của parent proccess để xử lý mỗi yêu cầu của client:
+
+![image](https://github.com/user-attachments/assets/18b64263-75f4-4bd0-8841-c37b65c7cb35)
+Hình 4.14: Đây là trạng thái client/server trước khi gọi `accept()` return.
+
+![image](https://github.com/user-attachments/assets/2e33a99e-2d68-4b00-93c6-14668affce85)
+Hình 4.15: Đây là sự kết nối được `accept()` bởi kernel và 1 socket mớ được tạo ra (connfd).
+
+![image](https://github.com/user-attachments/assets/e718b29f-f4b0-4774-8e98-49b4a392d2c8)
+Hình 4.16: Đây là trạng thái sau khi họi `fork()` trong concurrent server. Thông báo rằng cả 2 socket descriptor (listenfd và connfd) được share (duplicate) giữa parent và child.
+
+![image](https://github.com/user-attachments/assets/fb3a271e-e488-4ad8-a170-d8f95c306265)
+Hình 4.17: Parent `close()` socket đã kết nốt và child `close()` socket đang lắng nghe.
 ### 2.8 `close` function
 Đóng socket và giải phóng tài nguyên.
 
