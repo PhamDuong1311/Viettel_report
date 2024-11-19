@@ -6,18 +6,53 @@ Socket là phương tiện cho phép giao tiếp giữa hai tiến trình khác 
 Hầu hết các hàm socket đều yêu cầu một con trỏ đến cấu trúc địa chỉ socket làm đối số. Mỗi bộ giao thức được hỗ trợ đều định nghĩa cấu trúc địa chỉ socket riêng. Tên của các cấu trúc này bắt đầu bằng sockaddr_ và kết thúc bằng hậu tố duy nhất cho mỗi bộ giao thức.
 #### a. IPv4 socket address structure
 Cấu trúc địa chỉ socket IPv4, thường được gọi là "cấu trúc địa chỉ socket Internet", được đặt tên là sockaddr_in và được định nghĩa bằng cách include <netinet/in.h>
+```c
+struct in_addr {
+  in_addr_t   s_addr;           /* 32-bit IPv4 address */
+                                /* network byte ordered */
+};
 
-![image](https://github.com/user-attachments/assets/542f083d-5f27-4262-b119-82ef6f40d301)
+struct sockaddr_in {
+  uint8_t         sin_len;      /* length of structure (16) */
+  sa_family_t     sin_family;   /* AF_INET */
+  in_port_t       sin_port;     /* 16-bit TCP or UDP port number */
+                                /* network byte ordered */
+  struct in_addr  sin_addr;     /* 32-bit IPv4 address */
+                                /* network byte ordered */
+  char            sin_zero[8];  /* unused */
+};
+```
 #### b. General socket address structure
 Cấu trúc địa chỉ socket luôn được truyền theo tham chiếu khi được truyền dưới dạng đối số cho bất kỳ hàm socket nào. Nhưng bất kỳ hàm socket nào lấy một trong những con trỏ này làm đối số phải xử lý các cấu trúc địa chỉ socket từ bất kỳ họ giao thức nào được hỗ trợ.
 Một vấn đề phát sinh trong cách khai báo loại con trỏ được truyền. Với ANSI C, giải pháp rất đơn giản: void * là loại con trỏ chung. Nhưng các hàm socket có trước ANSI C và giải pháp được chọn vào năm 1982 là định nghĩa một cấu trúc địa chỉ socket chung trong tiêu đề <sys/socket.h>.
-
-![image](https://github.com/user-attachments/assets/adabe647-3cc9-4aa9-964a-207d6d44eab9)
+```c
+struct sockaddr {
+  uint8_t      sa_len;
+  sa_family_t  sa_family;    /* address family: AF_xxx value */
+  char         sa_data[14];  /* protocol-specific address */
+};
+```
 #### c. IPv6 socket address struture
 Địa chỉ socket IPv6 được xác định bằng cách include <netinet/in.h>
+```c
+struct in6_addr {
+  uint8_t  s6_addr[16];          /* 128-bit IPv6 address */
+                                 /* network byte ordered */
+};
 
-![image](https://github.com/user-attachments/assets/9a44f9f4-0b35-45c5-ae98-e12fa30df250)
+#define SIN6_LEN      /* required for compile-time tests */
 
+struct sockaddr_in6 {
+  uint8_t         sin6_len;      /* length of this struct (28) */
+  sa_family_t     sin6_family;   /* AF_INET6 */
+  in_port_t       sin6_port;     /* transport layer port# */
+                                 /* network byte ordered */
+  uint32_t        sin6_flowinfo; /* flow information, undefined */
+  struct in6_addr sin6_addr;     /* IPv6 address */
+                                 /* network byte ordered */
+  uint32_t        sin6_scope_id; /* set of interfaces for a scope */
+};
+```
 ### 1.3 Value-result arguments
 https://www.informit.com/articles/article.aspx?p=169505&seqNum=3
 ### 1.4 Byte ordering functions
@@ -61,6 +96,16 @@ in_addr_t inet_addr(const char *cp);
 - Hàm trả về địa chỉ IP dưới dạng kiểu in_addr_t (thường là kiểu unsigned long).
 - Nếu địa chỉ IP không hợp lệ, hàm trả về giá trị đặc biệt INADDR_NONE, thường có giá trị là 0xFFFFFFFF.
 #### c. inet_ntoa
+Hàm inet_ntoa chuyển đổi một địa chỉ IP nhị phân (dạng in_addr) thành ASCII string (dạng "xxx.xxx.xxx.xxx").
+```c
+char *inet_ntoa(struct in_addr in);
+```
+**Argument**:
+- in: Địa chỉ IP nhị phân (kiểu struct in_addr).
+
+**Return**:
+- Hàm trả về một chuỗi ký tự chứa địa chỉ IP dưới dạng ASCII.
+- Lưu ý rằng chuỗi trả về là một con trỏ tĩnh và có thể bị thay đổi nếu gọi lại hàm inet_ntoa trong lần sau.
 ### 1.6 inet_pton, inet_ntop functions
 ### 1.7 sock_ntop and related functions
 ### 1.8 readn, writen and readline functions
