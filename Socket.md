@@ -74,6 +74,8 @@ Khi thiết lập kết nối socket Internet, bạn phải đảm bảo rằng 
 Các hàm inet_aton, inet_addr, và inet_ntoa là các hàm liên quan đến việc chuyển đổi địa chỉ IP giữa các dạng khác nhau trong lập trình mạng. Các hàm này được định nghĩa trong thư viện <arpa/inet.h>.
 #### a. inet_aton
 Hàm inet_aton chuyển đổi một địa chỉ IP dưới dạng ASCII string (dạng "xxx.xxx.xxx.xxx") thành dạng Network Byte Order (đã định nghĩa ở phần trên) binary (dạng in_addr).
+
+**Syntax**:
 ```c
 int inet_aton(const char *cp, struct in_addr *inp);
 ```
@@ -86,6 +88,8 @@ int inet_aton(const char *cp, struct in_addr *inp);
 - Nếu có lỗi (địa chỉ IP không hợp lệ), hàm trả về 0.
 #### b. inet_addr
 Hàm inet_addr chuyển đổi một địa chỉ IP dưới dạng ASCII string (dạng "xxx.xxx.xxx.xxx") thành địa chỉ IP nhị phân dưới dạng kiểu in_addr_t (dạng Network Byte Order).
+
+**Syntax**:
 ```c
 in_addr_t inet_addr(const char *cp);
 ```
@@ -97,6 +101,8 @@ in_addr_t inet_addr(const char *cp);
 - Nếu địa chỉ IP không hợp lệ, hàm trả về giá trị đặc biệt INADDR_NONE, thường có giá trị là 0xFFFFFFFF.
 #### c. inet_ntoa
 Hàm inet_ntoa chuyển đổi một địa chỉ IP nhị phân (dạng in_addr) thành ASCII string (dạng "xxx.xxx.xxx.xxx").
+
+**Syntax**:
 ```c
 char *inet_ntoa(struct in_addr in);
 ```
@@ -107,8 +113,56 @@ char *inet_ntoa(struct in_addr in);
 - Hàm trả về một chuỗi ký tự chứa địa chỉ IP dưới dạng ASCII.
 - Lưu ý rằng chuỗi trả về là một con trỏ tĩnh và có thể bị thay đổi nếu gọi lại hàm inet_ntoa trong lần sau.
 ### 1.6 inet_pton, inet_ntop functions
+Chức năng tương tự như các hàm chuyển đổi trên nhưng ở đây mở rộng dùng cho cả IPv6
+#### a. inet_pton
+Hàm inet_pton (viết tắt của "presentation to network") chuyển đổi một địa chỉ IP từ dạng ASCII sang dạng nhị phân (dạng Network Byte Order).
+
+**Syntax**:
+```c
+int inet_pton(int af, const char *src, void *dst);
+```
+**Argument**:
+- af: Loại giao thức mạng (có thể là AF_INET cho IPv4 hoặc AF_INET6 cho IPv6).
+- src: Chuỗi địa chỉ IP cần chuyển đổi (ví dụ: "192.168.1.1" cho IPv4 hoặc "2001:db8::1" cho IPv6).
+- dst: Con trỏ đến bộ nhớ nơi sẽ lưu trữ địa chỉ IP dạng nhị phân (ví dụ: struct in_addr cho IPv4 hoặc struct in6_addr cho IPv6).
+  
+**Return**:
+- Nếu chuyển đổi thành công, hàm trả về 1.
+- Nếu có lỗi (ví dụ, chuỗi IP không hợp lệ), hàm trả về 0.
+- Nếu địa chỉ không hợp lệ cho giao thức được chỉ định, hàm trả về -1 và thiết lập errno.
+#### b. inet_ntop
+Hàm inet_ntop (viết tắt của "network to presentation") chuyển đổi một địa chỉ IP từ dạng nhị phân (dạng Network Byte Order) sang dạng ASCII.
+
+**Syntax**:
+```c
+const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
+```
+**Argument**:
+- af: Loại giao thức mạng (có thể là AF_INET cho IPv4 hoặc AF_INET6 cho IPv6).
+- src: Con trỏ đến dữ liệu địa chỉ IP dạng nhị phân (ví dụ: struct in_addr cho IPv4 hoặc struct in6_addr cho IPv6).
+- dst: Chuỗi ký tự nơi địa chỉ IP dưới dạng chuỗi sẽ được lưu trữ.
+- size: Kích thước của bộ đệm dst (số byte tối đa cho phép để chứa địa chỉ IP sau khi chuyển đổi).
+  
+**Return**:
+- Nếu chuyển đổi thành công, hàm trả về con trỏ đến chuỗi ký tự đại diện cho địa chỉ IP.
+- Nếu có lỗi, hàm trả về NULL và thiết lập errno.
 ### 1.7 sock_ntop and related functions
+Hàm inet_ntop có 1 vấn đề là nó yêu cầu truyền pointer vào địa chỉ binary. Địa chỉ này chứa 1 SAS (socket addrress structure), yêu cầu người gọi hàm biết cấu trúc của hắn :v và địa chỉ family => (to be continue)
+
+**Syntax**:
+```c
+const char *sock_ntop(const struct sockaddr *sa, socklen_t salen);
+```
+
+**Argument**:
+- sa: Con trỏ đến một cấu trúc sockaddr (có thể là sockaddr_in cho IPv4, sockaddr_in6 cho IPv6, hoặc các loại sockaddr khác).
+- salen: Kích thước của cấu trúc sockaddr (ví dụ: sizeof(struct sockaddr_in) cho IPv4 và sizeof(struct sockaddr_in6) cho IPv6).
+- 
+**Return**:
+- Hàm này sẽ trả về một chuỗi chứa địa chỉ mạng ở dạng chuỗi (địa chỉ IP với cổng).
+- Nếu có lỗi trong quá trình chuyển đổi, nó sẽ trả về NULL.
 ### 1.8 readn, writen and readline functions
 
 ## 2. Socket TCP
+
 ## 3. Socket UDP
