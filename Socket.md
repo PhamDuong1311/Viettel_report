@@ -147,7 +147,7 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
 - Nếu chuyển đổi thành công, hàm trả về con trỏ đến chuỗi ký tự đại diện cho địa chỉ IP.
 - Nếu có lỗi, hàm trả về NULL và thiết lập errno.
 ### 1.7 sock_ntop and related functions
-Hàm inet_ntop có 1 vấn đề là nó yêu cầu truyền pointer vào địa chỉ binary. Địa chỉ này yêu cầu người gọi hàm biết cấu trúc của hắn (struct sockaddr_in cho IPv4 hay struct sockaddr_in6 cho IPv6) và địa chỉ family (IPv4: AF_INET, IPv6: AF_INET6) => Khi làm việc với một struct sockaddr, phải tự tay kiểm tra sa_family (là AF_INET hay AF_INET6) để quyết định cách xử lý => Điều này dẫn đến mã nguồn dài dòng và dễ nhầm lẫn, đặc biệt khi cần hỗ trợ cả IPv4 và IPv6.
+Hàm inet_ntop có 1 vấn đề là nó yêu cầu truyền pointer vào địa chỉ binary. Địa chỉ này yêu cầu người gọi hàm biết cấu trúc của hắn (`struct sockaddr_in` cho IPv4 hay struct sockaddr_in6 cho IPv6) và địa chỉ family (IPv4: AF_INET, IPv6: AF_INET6) => Khi làm việc với một struct sockaddr, phải tự tay kiểm tra sa_family (là AF_INET hay AF_INET6) để quyết định cách xử lý => Điều này dẫn đến mã nguồn dài dòng và dễ nhầm lẫn, đặc biệt khi cần hỗ trợ cả IPv4 và IPv6.
 
 => Hàm sock_ntop (dù không phải chuẩn) khắc phục nhược điểm này bằng cách:
 - Nhận trực tiếp một con trỏ tới struct sockaddr.
