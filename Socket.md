@@ -197,12 +197,93 @@ ssize_t readline(int fd, void *buf, size_t maxlen);
 
 ![image](https://github.com/user-attachments/assets/37440647-d979-4f57-bd74-64b224959f34)
 ### 2.1 `socket` function
+Tạo một socket để giao tiếp qua mạng.
+
+**Syntax**:
+```c
+int socket(int domain, int type, int protocol);
+```
+**Argument**:
+- domain: Giao thức mạng (e.g., `AF_INET` cho IPv4, `AF_INET6` cho IPv6).
+- type: Loại socket (`SOCK_STREAM` cho TCP, `SOCK_DGRAM` cho UDP).
+- protocol: Giao thức cụ thể, thường là 0 (mặc định).
+  
+**Return**:
+- File descriptor của socket (>= 0) nếu thành công.
+- -1 nếu lỗi.
 ### 2.2 `connect` function
+Yêu cầu thiết lập kết nối đến server.
+
+**Syntax**:
+```c
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+```
+**Argument**:
+- sockfd: File descriptor của socket từ socket().
+- addr: Con trỏ tới địa chỉ của server.
+- addrlen: Kích thước của cấu trúc địa chỉ.
+  
+**Return**:
+- 0 nếu thành công.
+- -1 nếu lỗi.
 ### 2.3 `blind` function
+Gắn socket với một địa chỉ IP và port cụ thể.
+
+**Argument**:
+```c
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+```
+**Argument**:
+- sockfd: File descriptor của socket từ hàm `socket()`.
+- addr: Con trỏ tới cấu trúc chứa địa chỉ (e.g., `struct sockaddr_in`).
+- addrlen: Kích thước của cấu trúc địa chỉ.
+
+**Return**:
+- 0 nếu thành công.
+- -1 nếu lỗi.
 ### 2.4 `listen` function
+Đánh dấu socket để bắt đầu chờ kết nối đến từ client.
+
+**Syntax**:
+```c
+int listen(int sockfd, int backlog);
+```
+**Argument**:
+- sockfd: File descriptor của socket từ `bind()`.
+- backlog: Số lượng kết nối tối đa có thể xếp hàng chờ xử lý.
+
+**Return**:
+- 0 nếu thành công.
+- -1 nếu lỗi.
 ### 2.5 `accept` function
+Chấp nhận một kết nối từ client.
+
+**Syntax**:
+```c
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+```
+**Argument**:
+- sockfd: File descriptor của socket từ listen().
+- addr: Con trỏ để lưu địa chỉ client (e.g., struct sockaddr_in).
+- addrlen: Con trỏ tới kích thước của cấu trúc địa chỉ.
+
+**Return**:
+- File descriptor của socket mới cho kết nối đã chấp nhận.
+- -1 nếu lỗi.
 ### 2.6 `fork` and `exec` functions
 ### 2.7 Concurrent servers
 ### 2.8 `close` function
+Đóng socket và giải phóng tài nguyên.
+
+**Syntax**:
+```c
+int close(int sockfd);
+```
+**Argument**:
+- sockfd: File descriptor của socket cần đóng.
+
+**Return**:
+- 0 nếu thành công.
+- -1 nếu lỗi.
 ## 3. I/O multiplexing: `select` and `poll` functions
 ## 4. Socket UDP
