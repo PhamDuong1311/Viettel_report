@@ -19,7 +19,9 @@ Một vấn đề phát sinh trong cách khai báo loại con trỏ được tru
 ![image](https://github.com/user-attachments/assets/9a44f9f4-0b35-45c5-ae98-e12fa30df250)
 
 ### 1.3 Value-result arguments
+https://www.informit.com/articles/article.aspx?p=169505&seqNum=3
 ### 1.4 Byte ordering functions
+
 ### 1.5 inet_aton, inet_addr, inet_ntoa functions
 ### 1.6 inet_pton, inet_ntop functions
 ### 1.7 sock_ntop and related functions
