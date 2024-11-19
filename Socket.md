@@ -197,7 +197,9 @@ ssize_t readline(int fd, void *buf, size_t maxlen);
 
 ![image](https://github.com/user-attachments/assets/37440647-d979-4f57-bd74-64b224959f34)
 ### 2.1 `socket` function
-Tạo một socket để giao tiếp qua mạng.
+**Note**:
+- Tạo một socket để giao tiếp qua mạng (gọi bởi server và client).
+- `socket()` không chỉ ra data đến từ đâu (cũng như gửi từ đâu), nó chỉ tạo ra 1 interface.
 
 **Syntax**:
 ```c
@@ -212,14 +214,17 @@ int socket(int domain, int type, int protocol);
 - File descriptor của socket (>= 0) nếu thành công.
 - -1 nếu lỗi.
 ### 2.2 `connect` function
-Yêu cầu thiết lập kết nối đến server.
-
+**Note**:
+- Yêu cầu thiết lập kết nối đến server.
+- Nếu `connect()` = 1 => `socket()` không sử dụng được nữa và phải `close()`.
+- Không thể gọi `connect()` lại trên `socket()` (mà phải gọi lại socket nếu trong vòng lặp).
+- `connect()` khởi tạo TCP (three-way handshake)
 **Syntax**:
 ```c
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 ```
 **Argument**:
-- sockfd: File descriptor của socket từ socket().
+- sockfd: File descriptor của socket từ `socket()`.
 - addr: Con trỏ tới địa chỉ của server.
 - addrlen: Kích thước của cấu trúc địa chỉ.
   
