@@ -21,7 +21,7 @@ Một vấn đề phát sinh trong cách khai báo loại con trỏ được tru
 ### 1.3 Value-result arguments
 https://www.informit.com/articles/article.aspx?p=169505&seqNum=3
 ### 1.4 Byte ordering functions
-Không phải tất cả máy tính đều lưu trữ các byte tạo nên giá trị đa byte theo cùng một thứ tự. Hãy xem xét một mạng internet 16 bit được tạo thành từ 2 byte. Có hai cách để lưu trữ giá trị này:
+Không phải tất cả máy tính (Host) đều lưu trữ các byte tạo nên giá trị multiple-byte theo cùng một thứ tự. Xét một mạng internet 16 bit được tạo thành từ 2 byte. Có hai cách để lưu trữ giá trị này:
 
 - **Little Endian** − Byte bậc thấp được lưu trữ ở địa chỉ bắt đầu (A) và byte bậc cao được lưu trữ ở địa chỉ tiếp theo (A + 1).
 
@@ -29,7 +29,17 @@ Không phải tất cả máy tính đều lưu trữ các byte tạo nên giá 
 
 Để cho phép các máy có quy ước thứ tự byte khác nhau giao tiếp với nhau, các giao thức Internet chỉ định một quy ước thứ tự byte chuẩn cho dữ liệu được truyền qua mạng. Quy ước này được gọi là **Network Byte Order**.
 
-Khi thiết lập kết nối socket Internet, bạn phải đảm bảo rằng dữ liệu trong các thành viên sin_port và sin_addr của cấu trúc sockaddr_in được biểu diễn trong Network Byte Order.
+Khi thiết lập kết nối socket Internet, bạn phải đảm bảo rằng dữ liệu trong các thành viên sin_port và sin_addr của cấu trúc sockaddr_in (hoặc cấu trúc khác) được biểu diễn trong Network Byte Order.
+#### Byte ordering functions
+
+![image](https://github.com/user-attachments/assets/8ead5bdf-6fac-48eb-aaa6-960485cc1846)
+  unsigned short htons(unsigned short hostshort) − Hàm chuyển đổi 16-bit (2-byte) từ host byte order sang network byte order.
+  
+  unsigned long htonl(unsigned long hostlong) − Hàm chuyển đổi 32-bit (4-byte) từ host byte order sang network byte order.
+  
+  unsigned short ntohs(unsigned short netshort) − Hàm chuyển đổi 16-bit (2-byte) từ network byte order sang host byte order.
+  
+  unsigned long ntohl(unsigned long netlong) − Hàm chuyển đổi 32-bit (4-byte) từ network byte order sang host byte order.
 ### 1.5 inet_aton, inet_addr, inet_ntoa functions
 ### 1.6 inet_pton, inet_ntop functions
 ### 1.7 sock_ntop and related functions
