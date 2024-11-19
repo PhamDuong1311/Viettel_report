@@ -175,13 +175,15 @@ Hàm này được thiết kế để đảm bảo đọc chính xác n bytes t�
 
 **Syntax**: 
 ```c 
-ssize_t readn(int fd, void *buf, size_t n); ```
+ssize_t readn(int fd, void *buf, size_t n);
+```
 #### b. writen
 Hàm này đảm bảo ghi chính xác n bytes từ bộ nhớ đến descriptor, khắc phục vấn đề write có thể không ghi hết dữ liệu trong một lần gọi.
 
 **Syntax**: 
 ```c 
-ssize_t writen(int fd, const void *buf, size_t n); ```
+ssize_t writen(int fd, const void *buf, size_t n);
+```
 #### c. readline
 Hàm này đọc dữ liệu từ fd từng byte một cho đến khi gặp:
 - Ký tự xuống dòng (\n).
@@ -189,7 +191,8 @@ Hàm này đọc dữ liệu từ fd từng byte một cho đến khi gặp:
 
 **Syntax**:
 ```c 
-ssize_t readline(int fd, void *buf, size_t maxlen); ```
+ssize_t readline(int fd, void *buf, size_t maxlen);
+```
 ## 2. Socket TCP
 
 ## 3. Socket UDP
