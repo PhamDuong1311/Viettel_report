@@ -45,15 +45,13 @@ Khi thiết lập kết nối socket Internet, bạn phải đảm bảo rằng 
 Các hàm inet_aton, inet_addr, và inet_ntoa là các hàm liên quan đến việc chuyển đổi địa chỉ IP giữa các dạng khác nhau trong lập trình mạng. Các hàm này được định nghĩa trong thư viện <arpa/inet.h>.
 #### a. inet_aton
 Hàm inet_aton chuyển đổi một địa chỉ IP dưới dạng ASCII string (dạng "xxx.xxx.xxx.xxx") thành dạng Network Byte Order (đã định nghĩa ở phần trên) binary (dạng in_addr).
-```c
+```
 int inet_aton(const char *cp, struct in_addr *inp);
 ```
-**Tham số:
-**
+**Tham số:**
 cp: Một chuỗi ký tự đại diện cho địa chỉ IP dưới dạng ASCII (ví dụ: "192.168.1.1").
 inp: Con trỏ đến cấu trúc in_addr (đại diện cho địa chỉ IP dưới dạng nhị phân).
-**Giải thích:
-**
+**Giải thích:**
 Nếu chuyển đổi thành công, hàm trả về 1, và địa chỉ IP nhị phân được lưu trữ trong inp.
 Nếu có lỗi (địa chỉ IP không hợp lệ), hàm trả về 0.
 #### b. inet_addr
