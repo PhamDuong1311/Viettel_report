@@ -488,7 +488,7 @@ ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
 
 ### 4.3 TCP and UDP client/server with 2 clients
 
-![image](https://github.com/user-attachments/assets/0583dfb2-a903-4d82-afeb-94e614d36043
+![image](https://github.com/user-attachments/assets/0583dfb2-a903-4d82-afeb-94e614d36043)
 
 **TCP server là concurrent**
 
