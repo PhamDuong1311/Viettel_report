@@ -394,8 +394,69 @@ Khi client chờ nhập từ phím (stdin) nhưng bị chặn khi đọc dữ li
 ### 3.2 I/O multiplexing
 #### a. `select()` function
 Là 1 system call phép proccess hướng dẫn kernel thực hiện 1 trong 2 hành động:
-- 
-#### b. `poll()` function
+- Chờ bất kỳ sự kiện nào trong số nhiều sự kiện xảy ra và chỉ đánh thức proccess khi 1 hoặc nhiều sự kiện xảy ra.
+- Hoặc khi chờ 1 khoảng thời gian nhất định trôi qua.
 
+**Syntax**:
+```c
+int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
+```
+
+**Argument**:
+- nfds: chỉ định số lượng descriptor cần kiểm tra (max descriptor + 1).
+- readfds, writefds, exceptfds: chỉ định các descriptor mà muốn kiểm tra với các điều kiện đọc/ ghi/except. `select()` sử dụng các descriptor set (thường là mảng số nguyên) với mỗi bit trong mỗi số nguyên tương ứng với 1 descriptor:
+```c
+void FD_ZERO(fd_set *fdset);
+void FD_SET(int fd, fd_set *fdset);
+void FD_CLEAR(int fd, fd_set *fdset);
+int FD_ISSET(int fd, fd_set *fdset);
+```
+- timeout: cho biết kernel phải đợi bao lâu để 1 trong các descriptor được chỉ định sẵn sàng. Cấu trúc `timeval`:
+```c
+struct timeval {
+  long tv_sec;
+  long tv_usec;
+};
+```
+
+**Return**:
+- Tổng bit đã sẵn sàng descriptor.
+- 0 nếu timeout.
+- -1 nếu lỗi.
+#### b. `poll()` function
+Hàm này tương tự `select()` và cung cấp thông tin bổ sung khi xử lý các thiết bị STREAMS
+
+**Syntax**:
+```c
+int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+```
+
+**Argument**:
+- fds: con trỏ đến phần tử đầu tiên của mảng các cấu trúc, mỗi phần tử của mảng là 1 cấu trúc `pollfd` chỉ định các điều kiện cần kiểm tra cho 1 descriptor nhất định:
+```c
+struct pollfd {
+    int fd;          // The file descriptor to monitor
+    short events;    // The events to wait for (e.g., POLLIN for read, POLLOUT for write)
+    short revents;   // The events that actually occurred
+};
+```
+- nfds: số lượng phần tử trong mảng cấu trúc.
+- timeout: thời gian phải đợi trước khi return.
+
+**Return**:
+- Số lượng descriptor sẵn sàng
+- O nếu timeout
+- -1 nếu lỗi
+
+#### c. Comparision `select()`and `poll()`
+- Giới hạn số lượng file descriptor:
+  + `select()`: giới hạn tối đa 1024
+  + `poll()`: không giới hạn
+- Hiệu năng:
+  + `select()`: phải kiểm tra từng bit trong `fd_set` để biết file descriptor (bit) nào cần theo dõi (phải mất công duyệt hết cmnl)
+  + `poll()`: chỉ cần truyền cấu trúc chính xác file descriptor kèm theo sự kiện quan tâm (`pollfd.fd`, `pollfd.event`) thì kernelsex kiểm tra duy nhất các fd đó
+- Tương thích:
+  + `select()`: tương thích với nhiều hệ thống
+  + `poll()`: có nhiều biến thể ở các hệ thống khác nhau
 
 ## 4. Socket UDP
