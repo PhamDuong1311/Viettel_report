@@ -234,7 +234,7 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 - Không thể gọi `connect()` lại trên `socket()` (mà phải gọi lại socket nếu trong vòng lặp).
 - `connect()` khởi tạo TCP (three-way handshake).
 
-### 2.3 `blind` function
+### 2.3 `bind` function
 **Syntax**:
 ```c
 int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
