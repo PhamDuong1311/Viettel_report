@@ -24,7 +24,7 @@ struct sockaddr_in {
 ```
 #### b. General socket address structure
 Cấu trúc địa chỉ socket luôn được truyền theo tham chiếu khi được truyền dưới dạng đối số cho bất kỳ hàm socket nào. Nhưng bất kỳ hàm socket nào lấy một trong những con trỏ này làm đối số phải xử lý các cấu trúc địa chỉ socket từ bất kỳ họ giao thức nào được hỗ trợ.
-Một vấn đề phát sinh trong cách khai báo loại con trỏ được truyền. Với ANSI C, giải pháp rất đơn giản: void * là loại con trỏ chung. Nhưng các hàm socket có trước ANSI C và giải pháp được chọn vào năm 1982 là định nghĩa một cấu trúc địa chỉ socket chung trong `#include <sys/socket.h>`.
+Một vấn đề phát sinh trong cách khai báo loại con trỏ được truyền. Với ANSI C, giải pháp rất đơn giản: void * là loại con trỏ chung. Nhưng các hàm socket có trước ANSI C và giải pháp được là định nghĩa một cấu trúc địa chỉ socket chung trong `#include <sys/socket.h>`.
 ```c
 struct sockaddr {
   uint8_t      sa_len;
