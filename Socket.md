@@ -54,7 +54,7 @@ struct sockaddr_in6 {
 };
 ```
 ### 1.3 Value-result arguments
-https://www.informit.com/articles/article.aspx?p=169505&seqNum=3
+Em chưa hiểu phần này lắm 
 ### 1.4 Byte ordering functions
 Không phải tất cả máy tính (Host) đều lưu trữ các byte tạo nên giá trị multiple-byte theo cùng một thứ tự. Xét một mạng internet 16 bit được tạo thành từ 2 byte. Có hai cách để lưu trữ giá trị này:
 - **Little Endian** − Byte bậc thấp được lưu trữ ở địa chỉ bắt đầu (A) và byte bậc cao được lưu trữ ở địa chỉ tiếp theo (A + 1).
@@ -365,7 +365,37 @@ int close(int sockfd);
 - -1 nếu lỗi.
 
 ### 2.9 `getsockname` and `getpeername` functions
+Hai hàm này trả về hoặc là địa chỉ local protocol được kết nối với một socket (`getsockname()`) hoặc địa chỉ remote protocol được kết nối với 1 socket (`getpeername()`).
 
+**Syntax**:
+```c
+int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+int getpeername(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+```
+
+**Argument**:
+- sockfd: Là socket descriptor của socket mà bạn muốn lấy thông tin.
+- addr: Là con trỏ tới cấu trúc sockaddr để lưu trữ địa chỉ của socket.
+- addrlen: Là kích thước của cấu trúc sockaddr. Sau khi hàm thực thi, giá trị của addrlen sẽ được thay đổi thành kích thước thực tế của địa chỉ
+
+**Return**:
+- Nếu thành công trả về 0.
+- Xảy ra lỗi trả về -1.
+
+**Note**:
+  + Khi 1 TCP client `connect()` thành công tới server (client không gọi `bind()`), kernel sẽ tự động chọn 1 local IP address và port để kết nối,`getsockname()` sử dụng để lấy lại local IP address và port gán bởi kernel.
+  + Nếu TCP cient gọi `bind()` với port = 0 (kernel chọn local port tự động), `getsockname()` vẫn dùng lấy port gán bởi kernel.
+  + `getsockname()` quyết định address family của 1 socket.
+  + Ở TCP server, sau khi gọi `accept()`, server gọi`getsockname()` cũng chứa local IP addrress và port mà kernel gán.
+  + Khi TCP server `fork()` và `exec()` => tạo ra child nhưng memory image sẽ mất hết (kể SAS). Chỉ có 1 cách để child lấy địa chỉ client là gọi `getpeername()`.
 ## 3. I/O multiplexing: `select` and `poll` functions
+### 3.1 Introduction
+Khi client chờ nhập từ phím (stdin) nhưng bị chặn khi đọc dữ liệu từ đó, trong khi server gửi kết thúc kết nối (`FIN`) => client không đọc được tín hiệu EOF cho đến khi đọc từ socket => cần khả năng theo dõi nhiều nguồn I/O (như stdin hay socket) đồng thời => I/O multiplexing. I/O multiplexing cho phép ứng dụng theo dõi từ nhiều nguồn I/O (socket, file, stdin...) và thực hiện tất cả khi sẵn sàng.
+### 3.2 I/O multiplexing
+#### a. `select()` function
+Là 1 system call phép proccess hướng dẫn kernel thực hiện 1 trong 2 hành động:
+- 
+#### b. `poll()` function
+
 
 ## 4. Socket UDP
