@@ -460,3 +460,38 @@ struct pollfd {
   + `poll()`: có nhiều biến thể ở các hệ thống khác nhau
 
 ## 4. Socket UDP
+### 4.1 Introduction
+UDP là 1 connectionless,unreliable,datagram protocol (đã trình bày ở report trước). Application phổ biến sử dụng UDP: DNS, NFS, SNMP ... Dưới đây là quy trình giao tiếp giữa UDP server và UDP client:
+
+![image](https://github.com/user-attachments/assets/856c95ff-7d94-46cb-9454-540ea619c50c)
+
+### 4.2 `recvfrom` and `sendto` functions
+Tương tự 2 hàm tiêu chuẩn read/write nhưng có thêm 3 argument
+
+**Syntax**:
+```c
+ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, 
+                 struct sockaddr *src_addr, socklen_t *addrlen);
+ssize_t sendto(int sockfd, const void *buf, size_t len, int flags, 
+               const struct sockaddr *dest_addr, socklen_t addrlen);
+```
+
+**Argument**:
+- sockfd, buf, len: giống hàm read/write (descriptor, con trỏ tới buffer để đọc/ghi, số byte đọc/ghi)
+- flags: đặt bằng 0
+- dest_addr của `sendto()`: là SAS chứa (IP, port) nơi mà data được gửi, addrlen là kích thước SAS (dạng interger value)
+- src_addr của `recvfrom()`: là SAS chứa (IP, port) nơi data nhận, addrlen là kích thước SAS (pointer tới integer value hay gọi là value-result argument ???)
+
+**Return**:
+- Số lượng byte đọc/viết nếu thành công
+- -1 nếu lỗi
+
+### 4.3 TCP and UDP client/server with 2 clients
+
+![image](https://github.com/user-attachments/assets/0583dfb2-a903-4d82-afeb-94e614d36043
+
+**TCP server là concurrent**
+
+![image](https://github.com/user-attachments/assets/ecdce2db-cbd3-4004-9163-d1a777171b71)
+
+**UDP server là iterative**
