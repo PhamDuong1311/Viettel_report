@@ -8,19 +8,23 @@
 #define PORT 8080
 #define SERVER_IP "127.0.0.1"
 #define BUFFER_SIZE 1024
+#define FILE_DIR_CLIENT "./binary_file_client"
 
-void receive_file(int server_sock, const char *filename) {
+void receive_file(int client_sock, const char *filename) {
     char buffer[BUFFER_SIZE];
     ssize_t bytes_received;
     FILE *file;
+    char filepath[BUFFER_SIZE];
 
-    file = fopen(filename, "wb");
+    snprintf(filepath, sizeof(filepath), "%s/%s", FILE_DIR_CLIENT, filename);
+
+    file = fopen(filepath, "wb");
     if (file == NULL) {
         perror("fopen failed");
         return;
     }
 
-    while ((bytes_received = recv(server_sock, buffer, sizeof(buffer), 0)) > 0) {
+    while ((bytes_received = recv(client_sock, buffer, sizeof(buffer), 0)) > 0) {
         if (strncmp(buffer, "END", 3) == 0) {
             break;
         }
@@ -31,25 +35,6 @@ void receive_file(int server_sock, const char *filename) {
     fclose(file);
 }
 
-void request_file_list(int server_sock) {
-    char buffer[BUFFER_SIZE];
-    ssize_t bytes_received;
-
-    while (1) {
-        bytes_received = recv(server_sock, buffer, sizeof(buffer) - 1, 0);
-        if (bytes_received <= 0) {
-            printf("Không nhận được dữ liệu\n");
-            return;
-        }
-
-        buffer[bytes_received] = '\0';
-        if (strncmp(buffer, "END", 3) == 0) {
-            break;
-        }
-
-        printf("File có sẵn: %s\n", buffer);
-    }
-}
 
 
 int main() {
@@ -75,8 +60,6 @@ int main() {
     }
 
     printf("Kết nối thành công tới server\n");
-
-    request_file_list(client_socket);
 
     printf("Nhập tên file bạn muốn tải về: ");
     fgets(filename, sizeof(filename), stdin);
