@@ -496,7 +496,4 @@ ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,
 
 **UDP server là iterative**
 
-## 5. Raw Socket and Comparision Types Of Socket
-### 5.1 Raw Socket
-https://www.baeldung.com/cs/raw-sockets
 
