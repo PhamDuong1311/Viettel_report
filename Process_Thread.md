@@ -62,48 +62,36 @@ int pthread_join(pthread_t thread, void **retval);
 - 0: On success.
 - Non-zero value: On failure, indicating the error code.
 ## 3.3 `pthread_self()` Function
-Syntax:
-
-c
-Copy code
+**Syntax**:
+```c
 pthread_t pthread_self(void);
-Arguments:
+```
 
-This function does not take any arguments.
-Return Value:
+**Returns**: thread ID of calling thread
 
-pthread_t: It returns the pthread_t ID of the calling (current) thread. This value can be used to identify the current thread in comparisons with other threads.
-
-If the current thread is the main thread, pthread_self() will return the ID of the main thread.
 ## 3.4 `pthread_detach()` Function
-Function: pthread_detach()
-
-Syntax:
-
-c
-Copy code
+**Syntax**:
+```c
 int pthread_detach(pthread_t thread);
-Arguments:
+```
 
-pthread_t thread: The ID of the thread to detach.
-Return:
+**Arguments**:
+- pthread_t thread: The ID of the thread to detach.
+- 
+**Return**:
+- 0: On success.
+- Non-zero value: On failure, indicating the error code.
 
-0: On success.
-Non-zero value: On failure, indicating the error code.
 ## 3.5 `pthread_exit()` Function
-Function: pthread_exit()
-
-Syntax:
-
-c
-Copy code
+**Syntax**:
+```c
 void pthread_exit(void *retval);
-Arguments:
+```
 
-void *retval: A pointer to the value that the thread will return (it can be any type, typically cast to void *).
-Return:
+**Arguments**:
+- void *retval: A pointer to the value that the thread will return (it can be any type, typically cast to void *).
 
-There is no return value. This function terminates the calling thread and makes the return value available to other threads that join the thread.
+**Return**: There is no return value. This function terminates the calling thread and makes the return value available to other threads that join the thread.
 # II. IPC
 
 # III. Mutex and Semaphore
