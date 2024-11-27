@@ -3,54 +3,57 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <arpa/inet.h>
 
-#define PORT 8080
+#define PORT 9092
 #define BUFFER_SIZE 1024
 #define FILE_DIR "./binary_file_server"
 
-void send_file(int server_socket, const char *filename) {
+void send_file(int client_sock, struct sockaddr_in client_addr, const char *filename) {
     char filepath[BUFFER_SIZE];
     FILE *file;
     size_t bytes_read;
     char buffer[BUFFER_SIZE];
+    socklen_t client_len = sizeof(client_addr);
 
     snprintf(filepath, sizeof(filepath), "%s/%s", FILE_DIR, filename);
 
     file = fopen(filepath, "rb");
     if (file == NULL) {
         perror("fopen failed");
-        send(client_sock, "ERROR\n", 6, 0); 
+        sendto(client_sock, "ERROR\n", 6, 0, (struct sockaddr*)&client_addr, client_len);
         return;
     }
 
     while ((bytes_read = fread(buffer, 1, sizeof(buffer), file)) > 0) {
-        if (send(client_sock, buffer, bytes_read, 0) == -1) {
-            perror("send failed");
+        if (sendto(client_sock, buffer, bytes_read, 0, (struct sockaddr*)&client_addr, client_len) == -1) {
+            perror("sendto failed");
             fclose(file);
             return;
         }
     }
+
+    sendto(client_sock, "END", 3, 0, (struct sockaddr*)&client_addr, client_len);
     fclose(file);
-    printf("File %s đã được gửi\n", filename);
+    printf("File %s has been sent.\n", filename);
 }
 
-void handle_client(int client_sock) {
+void handle_client(int server_socket) {
     char buffer[BUFFER_SIZE];
     ssize_t bytes_received;
+    struct sockaddr_in client_addr;
+    socklen_t client_len = sizeof(client_addr);
 
-
-    bytes_received = recv(client_sock, buffer, sizeof(buffer) - 1, 0);
+    bytes_received = recvfrom(server_socket, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&client_addr, &client_len);
     if (bytes_received <= 0) {
-        perror("recv failed");
+        perror("recvfrom failed");
         return;
     }
-    buffer[bytes_received] = '\0'; 
+    buffer[bytes_received] = '\0';  
 
-    printf("Client yêu cầu tải file: %s\n", buffer);
+    printf("Client requested file: %s\n", buffer);
 
-    send_file(client_sock, buffer);
+    send_file(server_socket, client_addr, buffer);
 }
 
 int main() {
@@ -72,8 +75,7 @@ int main() {
         exit(1);
     }
 
-    printf("Server đang lắng nghe ở cổng %d...\n", PORT);
-
+    printf("Server's listening on port %d...\n", PORT);
 
     handle_client(server_socket);
 

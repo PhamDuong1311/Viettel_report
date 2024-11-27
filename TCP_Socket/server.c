@@ -33,7 +33,7 @@ void send_file(int client_sock, const char *filename) {
         }
     }
     fclose(file);
-    printf("File %s đã được gửi\n", filename);
+    printf("File %s has been sent.\n", filename);
 }
 
 void handle_client(int client_sock) {
@@ -48,7 +48,7 @@ void handle_client(int client_sock) {
     }
     buffer[bytes_received] = '\0'; 
 
-    printf("Client yêu cầu tải file: %s\n", buffer);
+    printf("Client requested file: %s\n", buffer);
 
     send_file(client_sock, buffer);
 }
@@ -84,14 +84,14 @@ int main() {
         exit(1);
     }
 
-    printf("Server đang lắng nghe ở cổng %d...\n", PORT);
+    printf("Server's listening on port %d...\n", PORT);
 
     if ((client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_addr_len)) == -1) {
         perror("Accept failed");
         exit(1);
     }
 
-    printf("Chấp nhận kết nối và tạo 1 socket mới cho client\n");
+    printf("Server has accepted client\n");
  
     handle_client(client_socket);
 

@@ -31,12 +31,12 @@ void receive_file(int client_sock, const char *filename) {
         fwrite(buffer, 1, bytes_received, file);
     }
 
-    printf("Tải file %s thành công\n", filename);
+    printf("Download file %s success\n", filename);
     fclose(file);
 }
 
-int handle_server(int client_socket, const char *filename) {
-    printf("Nhập tên file bạn muốn tải về: ");
+int handle_server(int client_socket, char *filename) {
+    printf("Enter the filename you want to download: ");
     fgets(filename, sizeof(filename), stdin);
     filename[strcspn(filename, "\n")] = '\0';  
 
@@ -67,10 +67,15 @@ int main() {
         exit(1);
     }
 
-    printf("Kết nối thành công tới server\n");
+    printf("Connect to server successfully\n");
 
-    handle_server(client_socket, &filename);
+    printf("Enter the filename you want to download: ");
+    fgets(filename, sizeof(filename), stdin);
+    filename[strcspn(filename, "\n")] = '\0';  
 
+    send(client_socket, filename, strlen(filename), 0);
+
+    receive_file(client_socket, filename);
     close(client_socket);
 
     return 0;
