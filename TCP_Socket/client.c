@@ -35,7 +35,15 @@ void receive_file(int client_sock, const char *filename) {
     fclose(file);
 }
 
+int handle_server(int client_socket, const char *filename) {
+    printf("Nhập tên file bạn muốn tải về: ");
+    fgets(filename, sizeof(filename), stdin);
+    filename[strcspn(filename, "\n")] = '\0';  
 
+    send(client_socket, filename, strlen(filename), 0);
+
+    receive_file(client_socket, filename);
+}
 
 int main() {
     int client_socket;
@@ -61,13 +69,7 @@ int main() {
 
     printf("Kết nối thành công tới server\n");
 
-    printf("Nhập tên file bạn muốn tải về: ");
-    fgets(filename, sizeof(filename), stdin);
-    filename[strcspn(filename, "\n")] = '\0';  
-
-    send(client_socket, filename, strlen(filename), 0);
-
-    receive_file(client_socket, filename);
+    handle_server(client_socket, &filename);
 
     close(client_socket);
 
