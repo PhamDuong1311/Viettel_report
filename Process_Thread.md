@@ -28,7 +28,7 @@ The thread takes less time to terminate as compared to the process but unlike th
 
 ## 3. Basic Thread functions: Creation and Termination
 ### 3.1 `pthread_create()` Function
-When a program is started by exec, a single thread is created, called the initial thread or main thread. Additional threads are created by pthread_create.
+When a program is started by `exec`, a single thread is created, called the initial thread or main thread. Additional threads are created by `pthread_create`.
 
 **Syntax**:
 
