@@ -5,12 +5,12 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define PORT 8080
+#define PORT 8888
 #define BUFFER_SIZE 1024
 #define FILE_DIR "./binary_file_server"
 
 
-void send_file(int client_sock, const char *filename) {
+void send_file(int sock, const char *filename) {
     char filepath[BUFFER_SIZE];
     FILE *file;
     size_t bytes_read;
@@ -21,12 +21,12 @@ void send_file(int client_sock, const char *filename) {
     file = fopen(filepath, "rb");
     if (file == NULL) {
         perror("fopen failed");
-        send(client_sock, "ERROR\n", 6, 0); 
+        send(sock, "ERROR\n", 6, 0); 
         return;
     }
 
     while ((bytes_read = fread(buffer, 1, sizeof(buffer), file)) > 0) {
-        if (send(client_sock, buffer, bytes_read, 0) == -1) {
+        if (send(sock, buffer, bytes_read, 0) == -1) {
             perror("send failed");
             fclose(file);
             return;
@@ -36,12 +36,12 @@ void send_file(int client_sock, const char *filename) {
     printf("File %s has been sent.\n", filename);
 }
 
-void handle_client(int client_sock) {
+void handle_client(int sock) {
     char buffer[BUFFER_SIZE];
     ssize_t bytes_received;
 
 
-    bytes_received = recv(client_sock, buffer, sizeof(buffer) - 1, 0);
+    bytes_received = recv(sock, buffer, sizeof(buffer) - 1, 0);
     if (bytes_received <= 0) {
         perror("recv failed");
         return;
@@ -50,7 +50,7 @@ void handle_client(int client_sock) {
 
     printf("Client requested file: %s\n", buffer);
 
-    send_file(client_sock, buffer);
+    send_file(sock, buffer);
 }
 
 int main() {
@@ -58,17 +58,10 @@ int main() {
     struct sockaddr_in server_addr, client_addr;
     socklen_t client_addr_len = sizeof(client_addr);
 
-    int opt = 1;
     if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("Socket failed");
         exit(1);
     }
-
-    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
-        perror("setsockopt failed");
-        exit(1);
-    }
-
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);

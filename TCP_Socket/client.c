@@ -5,12 +5,12 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define PORT 8080
+#define PORT 8888
 #define SERVER_IP "127.0.0.1"
 #define BUFFER_SIZE 1024
 #define FILE_DIR_CLIENT "./binary_file_client"
 
-void receive_file(int client_sock, const char *filename) {
+void receive_file(int sock, const char *filename) {
     char buffer[BUFFER_SIZE];
     ssize_t bytes_received;
     FILE *file;
@@ -24,7 +24,7 @@ void receive_file(int client_sock, const char *filename) {
         return;
     }
 
-    while ((bytes_received = recv(client_sock, buffer, sizeof(buffer), 0)) > 0) {
+    while ((bytes_received = recv(sock, buffer, sizeof(buffer), 0)) > 0) {
         if (strncmp(buffer, "END", 3) == 0) {
             break;
         }
@@ -33,16 +33,6 @@ void receive_file(int client_sock, const char *filename) {
 
     printf("Download file %s success\n", filename);
     fclose(file);
-}
-
-int handle_server(int client_socket, char *filename) {
-    printf("Enter the filename you want to download: ");
-    fgets(filename, sizeof(filename), stdin);
-    filename[strcspn(filename, "\n")] = '\0';  
-
-    send(client_socket, filename, strlen(filename), 0);
-
-    receive_file(client_socket, filename);
 }
 
 int main() {
