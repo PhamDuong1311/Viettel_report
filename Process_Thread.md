@@ -26,8 +26,8 @@ The thread takes less time to terminate as compared to the process but unlike th
 
 ![image](https://github.com/user-attachments/assets/b89eef3c-072e-496d-861d-3a90edbe0a97)
 
-# 3. Basic Thread functions: Creation and Termination
-## 3.1 `pthread_create()` Function
+## 3. Basic Thread functions: Creation and Termination
+### 3.1 `pthread_create()` Function
 When a program is started by exec, a single thread is created, called the initial thread or main thread. Additional threads are created by pthread_create.
 
 **Syntax**:
@@ -47,7 +47,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 - 0: On success.
 - Non-zero value: On failure, indicating the error code.
 
-## 3.2 `pthread_join()` Function
+### 3.2 `pthread_join()` Function
 
 **Syntax**:
 ```c
@@ -61,7 +61,7 @@ int pthread_join(pthread_t thread, void **retval);
 **Return**:
 - 0: On success.
 - Non-zero value: On failure, indicating the error code.
-## 3.3 `pthread_self()` Function
+### 3.3 `pthread_self()` Function
 **Syntax**:
 ```c
 pthread_t pthread_self(void);
@@ -69,7 +69,7 @@ pthread_t pthread_self(void);
 
 **Returns**: thread ID of calling thread
 
-## 3.4 `pthread_detach()` Function
+### 3.4 `pthread_detach()` Function
 **Syntax**:
 ```c
 int pthread_detach(pthread_t thread);
@@ -82,7 +82,7 @@ int pthread_detach(pthread_t thread);
 - 0: On success.
 - Non-zero value: On failure, indicating the error code.
 
-## 3.5 `pthread_exit()` Function
+### 3.5 `pthread_exit()` Function
 **Syntax**:
 ```c
 void pthread_exit(void *retval);
