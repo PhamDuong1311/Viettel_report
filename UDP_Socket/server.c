@@ -9,31 +9,31 @@
 #define BUFFER_SIZE 1024
 #define FILE_DIR "./binary_file_server"
 
-void send_file(int client_sock, struct sockaddr_in client_addr, const char *filename) {
+void send_file(int server_socket, struct sockaddr_in server_addr, const char *filename) {
     char filepath[BUFFER_SIZE];
     FILE *file;
     size_t bytes_read;
     char buffer[BUFFER_SIZE];
-    socklen_t client_len = sizeof(client_addr);
+    socklen_t server_len = sizeof(server_addr);
 
     snprintf(filepath, sizeof(filepath), "%s/%s", FILE_DIR, filename);
 
     file = fopen(filepath, "rb");
     if (file == NULL) {
         perror("fopen failed");
-        sendto(client_sock, "ERROR\n", 6, 0, (struct sockaddr*)&client_addr, client_len);
+        sendto(server_socket, "ERROR\n", 6, 0, (struct sockaddr*)&server_addr, server_len);
         return;
     }
 
     while ((bytes_read = fread(buffer, 1, sizeof(buffer), file)) > 0) {
-        if (sendto(client_sock, buffer, bytes_read, 0, (struct sockaddr*)&client_addr, client_len) == -1) {
+        if (sendto(server_socket, buffer, bytes_read, 0, (struct sockaddr*)&server_addr, server_len) == -1) {
             perror("sendto failed");
             fclose(file);
             return;
         }
     }
 
-    sendto(client_sock, "END", 3, 0, (struct sockaddr*)&client_addr, client_len);
+    sendto(server_socket, "END", 3, 0, (struct sockaddr*)&server_addr, server_len);
     fclose(file);
     printf("File %s has been sent.\n", filename);
 }
@@ -41,10 +41,10 @@ void send_file(int client_sock, struct sockaddr_in client_addr, const char *file
 void handle_client(int server_socket) {
     char buffer[BUFFER_SIZE];
     ssize_t bytes_received;
-    struct sockaddr_in client_addr;
-    socklen_t client_len = sizeof(client_addr);
+    struct sockaddr_in server_addr;
+    socklen_t server_len = sizeof(server_addr);
 
-    bytes_received = recvfrom(server_socket, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&client_addr, &client_len);
+    bytes_received = recvfrom(server_socket, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&server_addr, &server_len);
     if (bytes_received <= 0) {
         perror("recvfrom failed");
         return;
@@ -53,7 +53,7 @@ void handle_client(int server_socket) {
 
     printf("Client requested file: %s\n", buffer);
 
-    send_file(server_socket, client_addr, buffer);
+    send_file(server_socket, server_addr, buffer);
 }
 
 int main() {
