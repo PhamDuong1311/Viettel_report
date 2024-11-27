@@ -56,7 +56,7 @@ int pthread_join(pthread_t thread, void **retval);
 
 **Arguments**:
 - pthread_t thread: The ID of the thread to wait for.
-- void **retval: A pointer to a location where the exit status of the thread will be stored. Can be NULL if the status is not needed.
+- void **retval: A pointer to a location where the exit status of the thread will be stored. Can be `NULL` if the status is not needed.
 
 **Return**:
 - 0: On success.
@@ -89,7 +89,7 @@ void pthread_exit(void *retval);
 ```
 
 **Arguments**:
-- void *retval: A pointer to the value that the thread will return (it can be any type, typically cast to void *).
+- void *retval: A pointer to the value that the thread will return (it can be any type, typically cast to `void *`).
 
 **Return**: There is no return value. This function terminates the calling thread and makes the return value available to other threads that join the thread.
 # II. IPC
