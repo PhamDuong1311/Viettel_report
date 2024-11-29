@@ -8,11 +8,23 @@ In the traditional Unix model, when a process needs something performed by anoth
 
 ## 2. Basic Process
 ### 2.1 Proccess and Programs
-
-### 2.2 Process ID and Parent Process ID
 - A process is an instance of an executing program. A program is a file containing a range of information that describes how to construct a process at run time.
 - One program may be used to construct many processes, or, put conversely, many processes may be running the same program.
 - A process is an abstract entity defined by the kernel to execute a program by allocating system resources. It includes user-space memory containing program code and variables, along with kernel data structures that track its state. These data structures store information such as process IDs, virtual memory tables, open file descriptors, signal handling, resource usage, limits, and the current working directory.
+### 2.2 Process ID and Parent Process ID
+Each process has a process ID (PID), a positive integer that uniquely identifies the process on the system. The process ID is also useful if we need to build an identifier that is unique to a process.
+
+The getpid() system call returns the process ID of the calling process.
+
+```c
+pid_t getpid(void);
+```
+
+The Linux kernel limits process IDs to being less than or equal to 32,767. When
+a new process is created, it is assigned the next sequentially available process ID. Each
+time the limit of 32,767 is reached, the kernel resets its process ID counter so that
+process IDs are assigned starting from low integer values.
+
 ### 2.3 Memory layout of a Process
 
 ### 2.4 Virtual memory management
