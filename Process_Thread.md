@@ -25,15 +25,53 @@ a new process is created, it is assigned the next sequentially available process
 time the limit of 32,767 is reached, the kernel resets its process ID counter so that
 process IDs are assigned starting from low integer values.
 
+Each process has a parent—the process that created it. A process can find out the
+process ID of its parent using the `getppid()` system call.
+
+```c
+pid_t getppid(void);
+```
+
+Each process has a parent process ID (PPID), reflecting a tree-like hierarchy of processes that traces back to `init` (PID 1), the ancestor of all processes. If a parent process terminates, orphaned child processes are adopted by init, and calls to `getppid()` return 1. 
+
 ### 2.3 Memory layout of a Process
+The memory allocated to each process is composed of a number of parts, usually
+referred to as segments. These segments are as follows:
+- `Text Segment`: Contains the program's machine instructions. It is read-only to prevent accidental modification and sharable among processes running the same program (The text segment is shared among processes by leveraging **virtual memory** and **memory mapping** techniques).
+- `Initialized Data Segment`: Holds global and static variables explicitly initialized. Values are loaded from the executable file during program loading.
+- `Uninitialized Data Segment (BSS)`: Stores global and static variables not explicitly initialized, automatically set to 0 by the system. Space for these variables is allocated at runtime, not in the executable file.
+- `Stack`: Dynamically grows or shrinks, containing stack frames for each active function call. Each frame stores local variables, arguments, and return values.
+- `Heap`: Used for dynamic memory allocation during runtime. The top end is called the program break.
+
+![image](https://github.com/user-attachments/assets/f4b763b8-0bb9-4f87-ab65-f55a928d5caf)
 
 ### 2.4 Virtual memory management
-### 2.5 The stack and stack frames
-### 2.6 Command-Line arguments (argc, argv)
+Linux employs a technique known as **virtual memory
+management.** The aim of this technique is to make efficient use of both the **CPU** and
+**RAM** (physical memory).
 
+**Virtual memory** divides the memory space used by a program into small, fixed-size units called **pages**.
+Similarly, the physical **RAM** is divided into **page frames** of the same size as the **pages**.
 
-## 3. Basic Thread functions: Creation and Termination
-### 3.1 `pthread_create()` Function
+At any given time, only some pages of a program need to be loaded into physical memory (**RAM**). These pages form the **resident set**, which refers to the pages that are currently in memory and are actively being used by the process.
+
+Copies of the **unused pages** of a program are maintained in the **swap
+area** — a reserved area of disk space used to supplement the **computer’s RAM** — and
+loaded into **RAM** only as required.
+
+If a program tries to access a page that is not currently in the resident set (i.e., it’s not in physical memory), a **page fault** occurs. 
+When a page fault happens, the kernel temporarily suspends the process, retrieves the **required page** from the **swap area or disk**, and loads it into the **physical memory (page frame)**.
+
+![image](https://github.com/user-attachments/assets/ddf89f18-2a01-4595-ab4b-b9e3ba373d4e)
+
+The kernel maintains a page table for each
+process. The page table describes the location of each page in the pro-
+cess’s virtual address space (the set of all virtual memory pages available to the process).
+Each entry in the page table either indicates the location of a virtual page in RAM
+or indicates that it currently resides on disk.
+
+## 3. Basic Thread
+### a. `pthread_create()` Function
 When a program is started by `exec`, a single thread is created, called the initial thread or main thread. Additional threads are created by `pthread_create`.
 
 **Syntax**:
@@ -53,7 +91,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 - 0: On success.
 - Non-zero value: On failure, indicating the error code.
 
-### 3.2 `pthread_join()` Function
+### b. `pthread_join()` Function
 
 **Syntax**:
 ```c
@@ -67,7 +105,7 @@ int pthread_join(pthread_t thread, void **retval);
 **Return**:
 - 0: On success.
 - Non-zero value: On failure, indicating the error code.
-### 3.3 `pthread_self()` Function
+### c. `pthread_self()` Function
 **Syntax**:
 ```c
 pthread_t pthread_self(void);
@@ -75,7 +113,7 @@ pthread_t pthread_self(void);
 
 **Returns**: thread ID of calling thread
 
-### 3.4 `pthread_detach()` Function
+### d. `pthread_detach()` Function
 **Syntax**:
 ```c
 int pthread_detach(pthread_t thread);
@@ -88,7 +126,7 @@ int pthread_detach(pthread_t thread);
 - 0: On success.
 - Non-zero value: On failure, indicating the error code.
 
-### 3.5 `pthread_exit()` Function
+### e. `pthread_exit()` Function
 **Syntax**:
 ```c
 void pthread_exit(void *retval);
