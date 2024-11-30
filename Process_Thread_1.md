@@ -97,6 +97,21 @@ ID of its parent using `getppid()`.
 
 ![image](https://github.com/user-attachments/assets/c3149abe-a281-4430-a1a6-d429034ddabc)
 
+**Memory Semantics of `fork()`**
+When `fork()` is called in a process, it creates a new child process. Conceptually, this involves creating copies of the parent’s memory segments (**text, data, heap, and stack**) for the child. However, performing an actual copy of the entire memory space of the parent process would be wasteful, especially since the `fork()` is often followed by an immediate `exec()` call, which replaces the child’s memory with a new program. Modern operating systems, including Linux, avoid this wasteful copying using two key techniques:
+- Sharing the **Text Segment** (Code) Between Parent and Child:
+  + The kernel marks the text segment (code) as read-only.
+  + Both the parent and child processes share the same physical memory for the **code segment**.
+  + Instead of duplicating the **text segment**, the kernel sets up the child’s page-table entries to refer to the same physical memory pages used by the paren. => This allows both processes to share the code without duplication.
+
+- Copy-On-Write (COW) for **Data, Heap, and Stack Segments**:
+  + The kernel uses copy-on-write for the **data, heap, and stack segments** of the parent process.
+  + Initially, the child’s page-table entries point to the same physical memory pages as the parent’s, and these pages are marked as read-only.
+  + If either the parent or the child modifies one of these pages, the kernel traps the modification and creates a copy of the page for the faulting process (the parent or the child).
+  + After the modification, the parent and child each have their own private copy of the page, and any further changes made by either process are not visible to the other.
+
+![image](https://github.com/user-attachments/assets/370dd1c4-9d4b-440c-8024-3b04093f39bb)
+
 ### 4. Process Termination
 ### 5. Monitoring Child Processes
 ### 6. Program Execution
