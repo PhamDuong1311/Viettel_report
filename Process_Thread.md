@@ -1,10 +1,11 @@
 # I. Process and Thread
 ## 1. Basic Process
-### 1.1 Proccess and Programs
+### 1.1 Overview of Process
+#### a. Proccess and Programs
 - A process is an instance of an executing program. A program is a file containing a range of information that describes how to construct a process at run time.
 - One program may be used to construct many processes, or, put conversely, many processes may be running the same program.
 - A process is an abstract entity defined by the kernel to execute a program by allocating system resources. It includes user-space memory containing program code and variables, along with kernel data structures that track its state. These data structures store information such as process IDs, virtual memory tables, open file descriptors, signal handling, resource usage, limits, and the current working directory.
-### 1.2 Process ID and Parent Process ID
+#### b. Process ID and Parent Process ID
 Each process has a process ID (PID), a positive integer that uniquely identifies the process on the system. The process ID is also useful if we need to build an identifier that is unique to a process.
 
 The getpid() system call returns the process ID of the calling process.
@@ -27,7 +28,7 @@ pid_t getppid(void);
 
 Each process has a parent process ID (PPID), reflecting a tree-like hierarchy of processes that traces back to `init` (PID 1), the ancestor of all processes. If a parent process terminates, orphaned child processes are adopted by init, and calls to `getppid()` return 1. 
 
-### 1.3 Memory layout of a Process
+#### c. Memory layout of a Process
 The memory allocated to each process is composed of a number of parts, usually
 referred to as segments. These segments are as follows:
 - `Text Segment`: Contains the program's machine instructions. It is read-only to prevent accidental modification and sharable among processes running the same program (The text segment is shared among processes by leveraging **virtual memory** and **memory mapping** techniques).
@@ -38,7 +39,7 @@ referred to as segments. These segments are as follows:
 
 ![image](https://github.com/user-attachments/assets/f4b763b8-0bb9-4f87-ab65-f55a928d5caf)
 
-### 1.4 Virtual memory management
+#### d. Virtual memory management
 Linux employs a technique known as **virtual memory
 management.** The aim of this technique is to make efficient use of both the **CPU** and
 **RAM** (physical memory).
@@ -58,11 +59,48 @@ When a page fault happens, the kernel temporarily suspends the process, retrieve
 ![image](https://github.com/user-attachments/assets/ddf89f18-2a01-4595-ab4b-b9e3ba373d4e)
 
 The kernel maintains a page table for each
-process. The page table describes the location of each page in the pro-
-cess’s virtual address space (the set of all virtual memory pages available to the process).
+process. The page table describes the location of each page in the process’s virtual address space (the set of all virtual memory pages available to the process).
 Each entry in the page table either indicates the location of a virtual page in RAM
 or indicates that it currently resides on disk.
+### 1.2 Basic Process functions: Creation, Termination, Monitoring Child and Execution.
+#### a. Overview of `fork()`, `exit()`, `wait()` and `execve()`
+- `fork()` System Call:
+  + Creates a new child process, which is an almost exact duplicate of the parent process.
+  + The child inherits copies of the parent's stack, data, heap, and text segments.
+- `exit(status)` Library Function:
+  + Terminates a process and releases its resources (memory, open file descriptors, etc.).
+  + The `status` argument specifies the process's termination status.
+  + Layered on top of the `_exit()` system call, with `_exit()` being used when only one process should terminate after `fork()`.
+- `wait(&status)` System Call:
+  + Suspends the parent process until one of its child processes terminates.
+  + Returns the termination status of the child through the `status` argument.
+- `execve(pathname, argv, envp)` System Call:
+  + Replaces the current process image with a new program specified by `pathname`.
+  + `argv` and `envp` provide the argument and environment lists for the new program.
+  + Discards the existing program's text, stack, data, and heap, creating fresh segments.
+  + Often referred to as "execing" a new program, though there is no direct `exec()` call; instead, `execve()` and its variations are used.
+ 
+![image](https://github.com/user-attachments/assets/9a845495-3e7c-4c7a-b554-6b7378e9ac7e)
 
+#### b. Process Creation
+- The `fork()` system call creates a new process, the child, which is an almost exact
+duplicate of the calling process, the parent. The two processes are executing the same program **text**, but they have separate copies of the **stack**, **data**, and **heap** segments. The child’s stack, data, and heap segments are initially exact duplicates of the corresponding parts the parent’s memory. After the `fork()`, each process can modify the variables in its **stack**, **data**, and **heap** segments without affecting the other process.
+- We can distinguish the two processes via the
+value returned from `fork()`. For the parent, `fork()` returns the process ID of the
+newly created child. For the child, `fork()` returns 0.
+If necessary, the child can obtain its own process ID using `getpid()`, and the process
+ID of its parent using `getppid()`.
+- Example:
+
+![image](https://github.com/user-attachments/assets/fcdb10de-8a28-4194-a3aa-3fd7703a6d4b)
+
+=> Output:
+
+![image](https://github.com/user-attachments/assets/c3149abe-a281-4430-a1a6-d429034ddabc)
+
+#### c. Process Termination
+#### d. Monitoring Child Processes
+#### e. Program Execution
 ## 2. Basic Thread
 ### 2.1 Introduction
 In the traditional Unix model, when a process needs something performed by another entity, it `fork()` a child process and lets the child perform the processing. But there are problems with `fork()`:
@@ -71,7 +109,7 @@ In the traditional Unix model, when a process needs something performed by anoth
 
 => Threads help with both problems. Threads are sometimes called lightweight processes since a thread is "lighter weight" than a process.
 
-### 2.2 Basic Thread functions
+### 2.2 Basic Thread functions: Creation and Termination
 #### a. `pthread_create()` Function
 When a program is started by `exec`, a single thread is created, called the initial thread or main thread. Additional threads are created by `pthread_create`.
 
