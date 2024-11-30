@@ -63,7 +63,6 @@ process. The page table describes the location of each page in the process’s v
 Each entry in the page table either indicates the location of a virtual page in RAM
 or indicates that it currently resides on disk.
 ## 2. Basic Process functions: Creation, Termination, Monitoring Child and Execution.
-### 2.1  Overview of `fork()`, `exit()`, `wait()` and `execve()`
 - `fork()` System Call:
   + Creates a new child process, which is an almost exact duplicate of the parent process.
   + The child inherits copies of the parent's stack, data, heap, and text segments.
@@ -82,7 +81,7 @@ or indicates that it currently resides on disk.
  
 ![image](https://github.com/user-attachments/assets/9a845495-3e7c-4c7a-b554-6b7378e9ac7e)
 
-### 2.2 Process Creation
+### 3. Process Creation
 - The `fork()` system call creates a new process, the child, which is an almost exact
 duplicate of the calling process, the parent. The two processes are executing the same program **text**, but they have separate copies of the **stack**, **data**, and **heap** segments. The child’s stack, data, and heap segments are initially exact duplicates of the corresponding parts the parent’s memory. After the `fork()`, each process can modify the variables in its **stack**, **data**, and **heap** segments without affecting the other process.
 - We can distinguish the two processes via the
@@ -98,7 +97,8 @@ ID of its parent using `getppid()`.
 
 ![image](https://github.com/user-attachments/assets/c3149abe-a281-4430-a1a6-d429034ddabc)
 
-### 2.3 Process Termination
-### 2.4 Monitoring Child Processes
-### 2.5 Program Execution
+### 4. Process Termination
+### 5. Monitoring Child Processes
+### 6. Program Execution
+### 7. Moreeeeeeeeeeeee
 
