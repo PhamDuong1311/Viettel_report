@@ -73,23 +73,3 @@ void pthread_exit(void *retval);
 - void *retval: A pointer to the value that the thread will return (it can be any type, typically cast to `void *`).
 
 **Return**: There is no return value. This function terminates the calling thread and makes the return value available to other threads that join the thread.
-
-## 3. Different between Process and Thread
-Process and threads are the basic components in OS. Process is the program under execution whereas the thread is part of process. Threads of a process can be used when same process is required multiple times. A process can consists of multiple threads.
-### 3.1 Process
-Processes are basically the programs that are dispatched from the ready state and are scheduled in the CPU for execution. PCB ( Process Control Block ) holds the context of process. A process can create other processes which are known as Child Processes. The process takes more time to terminate, and it is isolated means it does not share the memory with any other process. The process can have the following states new, ready, running, waiting, terminated, and suspended.
-#### What's PCB (Process Control Block)
-While creating a process, the operating system performs several operations. To identify the processes, it assigns a process identification number (PID) to each process. As the operating system supports multi-programming, it needs to keep track of all the processes. For this task, the process control block (PCB) is used to track the process’s execution status. A Process Control Block (PCB) is a data structure used by the operating system to manage information about a process.
-
-![image](https://github.com/user-attachments/assets/0f8935be-efaa-4f27-a438-e8b5adf11610)
-
-The Process Control Block (PCB) is stored in a special part of memory that normal users can’t access. This is because it holds important information about the process. Some operating systems place the PCB at the start of the kernel stack for the process, as this is a safe and secure spot.
-### 3.2 Thread
-Thread is the segment of a process which means a process can have multiple threads and these multiple threads are contained within a process. A thread has three states: Running, Ready, and Blocked.
-The thread takes less time to terminate as compared to the process but unlike the process, threads do not isolate.
-
-![image](https://github.com/user-attachments/assets/ac0cd03f-f94c-4520-aef5-53c89223826d)
-
-### 3.3 Different between Process and Thread
-
-![image](https://github.com/user-attachments/assets/b89eef3c-072e-496d-861d-3a90edbe0a97)
