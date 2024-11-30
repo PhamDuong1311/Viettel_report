@@ -1,13 +1,13 @@
 # Process and Thread
 # II. Basic Thread
-## 1 Introduction
+## 1. Introduction
 In the traditional Unix model, when a process needs something performed by another entity, it `fork()` a child process and lets the child perform the processing. But there are problems with `fork()`:
 - fork is expensive. Memory is copied from the parent to the child, all descriptors are duplicated in the child, and so on.
 - IPC is required to pass information between the parent and child after the `fork()` (learn in the next part).
 
 => Threads help with both problems. Threads are sometimes called lightweight processes since a thread is "lighter weight" than a process.
 
-## 2 Basic Thread functions: Creation and Termination
+## 2. Basic Thread functions: Creation and Termination
 ### 2.1 `pthread_create()` Function
 When a program is started by `exec`, a single thread is created, called the initial thread or main thread. Additional threads are created by `pthread_create`.
 
