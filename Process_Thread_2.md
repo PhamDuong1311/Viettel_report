@@ -7,7 +7,7 @@ In the traditional Unix model, when a process needs something performed by anoth
 
 => Threads help with both problems. Threads are sometimes called lightweight processes since a thread is "lighter weight" than a process.
 
-## 2. Basic Thread functions: Creation and Termination
+## 2. Basic Thread functions: Creation, Termination, IDs, Joining, Deatching...
 ### 2.1 `pthread_create()` Function
 When a program is started by `exec`, a single thread is created, called the initial thread or main thread. Additional threads are created by `pthread_create`.
 
@@ -68,6 +68,10 @@ int pthread_detach(pthread_t thread);
 ```c
 void pthread_exit(void *retval);
 ```
+
+## 3. Thread Synchronization
+## 4. Thread Safety and Per-Thread Storage
+## 5. Thread Cancellation and more
 
 **Arguments**:
 - void *retval: A pointer to the value that the thread will return (it can be any type, typically cast to `void *`).
