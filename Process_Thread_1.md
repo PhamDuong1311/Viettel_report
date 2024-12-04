@@ -62,15 +62,15 @@ The kernel maintains a page table for each
 process. The page table describes the location of each page in the process’s virtual address space (the set of all virtual memory pages available to the process).
 Each entry in the page table either indicates the location of a virtual page in RAM
 or indicates that it currently resides on disk.
-### 2. Process types
+## 2. Process types
  There are different types of processes in a Linux system. These types include user processes, daemon 
 processes, and kernel processes.
-#### 2.1 User Processes
+### 2.1 User Processes
  Most processes in the system are user processes. A user process is one that is initiated by a regular user 
 account and runs in user space. Unless it is run in a way that gives the process special permissions, an 
 ordinary user process has no special access to the processor or to files on the system that don't belong to 
 the user who launched the process
-#### 2.2 Daemon Process
+### 2.2 Daemon Process
 - A daemon process is an application that is designed to run in the background, typically managing some kind 
 of ongoing service. A daemon process might listen for an incoming request for access to a service.
 -  Although daemon processes are typically managed as services by the root user, daemon processes often 
@@ -78,39 +78,54 @@ run as non-root users by a user account that is dedicated to the service. By run
 user accounts, a system is better protected in the event of an attack.
 - Systems often start daemons at boot time and have them run continuously until the system is shut down. 
 Daemons can also be started or stopped on demand, set to run at particular system run levels.
-#### 2.3 Kernel Processes
+### 2.3 Kernel Processes
 - Kernel processes execute only in kernel space. They are similar to daemon processes. The primary 
 difference is that kernel processes have full access to kernel data structures, which makes them more 
 powerful than daemon processes that run in user space. 
 - Kernel processes also are not as flexible as daemon processes. You can change the behavior of a daemon 
 process by changing configuration files and reloading the service. Changing kernel processes, however, 
 may require recompiling the kernel.
-### 3. Process state
+## 3. Process state
  When a process is created, the system assigns it a state. The state field of the process descriptor describes 
 the current state of the process. 
 
-![image](https://github.com/user-attachments/assets/205d9494-a64a-494f-be23-3cda16c1e4e4)
+![image](https://github.com/user-attachments/assets/419c51fd-4419-4766-94ae-d8d258cc97a5)
+
 
 The following typical process states are possible on computer systems of all kinds. In most of these states, processes are "stored" on main memory:
-#### 3.1 Created state
+### 3.1 Created state
 When a process is first created, it occupies the "created" or "new" state. In this state, the process awaits admission to the "ready" state. Admission will be approved or delayed by a long-term scheduler (admission scheduler).
-#### 3.2 Waiting state
+### 3.2 Waiting state
 - A "ready" or "waiting" process has been loaded into main memory (RAM) and is awaiting execution on a CPU (to be context switched onto the CPU by the dispatcher (short-term scheduler)). There may be many "ready" processes at any one point of the system's execution.
 - A ready queue (run queue) is used in computer scheduling. The CPU is only capable of handling one process at a time. Processes that are ready for the CPU are kept in a queue for "ready" processes. 
-#### 3.3 Running state
+### 3.3 Running state
 A process moves into the running state when it is chosen for execution. The process's instructions are executed by one of the CPUs of the system. There is at most one running process per CPU. A process can run in either of the two modes, namely **kernel mode** or **user mode.**
 - Kernel mode: The process has access to the memory system and can execute privileges.
 - User mode: The process has access only to the main memory and data, but no access to system resources or other processes.
-#### 3.4 Blocked state
-A process transitions to a blocked state when it cannot carry on without an external change in state or event occurring. For example, a process may block on a call to an I/O device such as a printer, if the printer is not available. Processes also commonly block when they require user input, or require access to a critical section which must be executed atomically. Such critical sections are protected using a synchronization object such as a semaphore or mutex.
-#### 3.5 Terminated state
-A process may be terminated, either from the "running" state by completing its execution or by explicitly being killed. In either of these cases, the process moves to the "terminated" state. The underlying program is no longer executing, but the process remains in the process table as a zombie process until its parent process calls the wait system call to read its exit status, at which point the process is removed from the process table, finally ending the process's lifetime. 
-#### 3.6 Additional process states
-##### a. Swapped out and waiting
+### 3.4 Blocked state
+Whenever the process requests access to I/O needs input from the user or needs access to a critical region(the lock for which is already acquired) it enters the blocked or waits state. The process continues to wait in the main memory and does not require CPU. Once the I/O operation is completed the process goes to the ready state.
+### 3.5 Terminated state
+A process may be terminated, either from the "running" state by completing its execution or by explicitly being killed. In either of these cases, the process moves to the "terminated" state. The underlying program is no longer executing, but the process remains in the process table as a zombie process until its parent process calls the `wait()` system call to read its exit status, at which point the process is removed from the process table, finally ending the process's lifetime. 
+### 3.6 Additional process states
+#### a. Swapped out and waiting
 (Also called suspended and waiting.) In systems that support virtual memory, a process may be swapped out, that is, removed from main memory and placed on external storage by the scheduler. From here the process may be swapped back into the waiting state.
 
-##### b. Swapped out and blocked
+#### b. Swapped out and blocked
 (Also called suspended and blocked.) Processes that are blocked may also be swapped out. In this event the process is both swapped out and blocked, and may be swapped back in again under the same circumstances as a swapped out and waiting process (although in this case, the process will move to the blocked state, and may still be waiting for a resource to become available).
+
+### 3.7 How does a Process move from one state to others?
+A process can move between different states in an operating system based on its execution status and resource availability. Here are some examples of how a process can move between different states:
+- **New to Ready**: When a process is created, it is in a new state. It moves to the ready state when the operating system has allocated resources to it and it is ready to be executed.
+- **Ready to Running**: When the CPU becomes available, the operating system selects a process from the ready queue depending on various scheduling algorithms and moves it to the running state.
+- **Running to Blocked**: When a process needs to wait for an event to occur (I/O operation or system call), it moves to the blocked state. For example, if a process needs to wait for user input, it moves to the blocked state until the user provides the input.
+- **Running to Ready**: When a running process is preempted by the operating system, it moves to the ready state. For example, if a higher-priority process becomes ready, the operating system may preempt the running process and move it to the ready state.
+- **Blocked to Ready**: When the event a blocked process was waiting for occurs, the process moves to the ready state. For example, if a process was waiting for user input and the input is provided, it moves to the ready state.
+- **Running to Terminated**: When a process completes its execution or is terminated by the operating system, it moves to the terminated state.
+
+### 3.8 Long-term scheduler and Short-term scheduler
+
+![image](https://github.com/user-attachments/assets/38d72da3-802a-4676-ab3e-db12da04b47e)
+
 ## 4. Basic Process functions: Creation, Termination, Monitoring Child and Execution.
 - `fork()` System Call:
   + Creates a new child process, which is an almost exact duplicate of the parent process.
@@ -130,7 +145,7 @@ A process may be terminated, either from the "running" state by completing its e
  
 ![image](https://github.com/user-attachments/assets/9a845495-3e7c-4c7a-b554-6b7378e9ac7e)
 
-### 5. Process Creation
+## 5. Process Creation
 - The `fork()` system call creates a new process, the child, which is an almost exact
 duplicate of the calling process, the parent. The two processes are executing the same program **text**, but they have separate copies of the **stack**, **data**, and **heap** segments. The child’s stack, data, and heap segments are initially exact duplicates of the corresponding parts the parent’s memory. After the `fork()`, each process can modify the variables in its **stack**, **data**, and **heap** segments without affecting the other process.
 - We can distinguish the two processes via the
@@ -161,7 +176,34 @@ When `fork()` is called in a process, it creates a new child process. Conceptual
 
 ![image](https://github.com/user-attachments/assets/370dd1c4-9d4b-440c-8024-3b04093f39bb)
 
-### 6. Process Termination
+## 6. Process Termination
+A process can terminate either abnormally (due to a signal) or normally (using system calls like _exit() or exit()).
+### 6.1 `_exit()` System Call
+```c
+void _exit(int status);
+```
+
+The `_exit()` system call is used for normal process termination. It is UNIX-specific and doesn't return.
+The status argument defines the termination status of the process, which the parent can retrieve using the `wait()` system call.
+
+**Status Interpretation:**
+- The bottom 8 bits of the status value are available to the parent.
+- By convention, 0 indicates successful termination, and any nonzero value indicates an error or abnormal termination.
+- Value Ranges:
+  - Status values between 0 and 255 are valid.
+  - Values greater than 128 can cause confusion in shell scripts, as the shell encodes signal termination as 128 + signal number. This makes status values in this range potentially ambiguous.
+`_exit()` never returns and terminates the process immediately.
+### 6.2 `exit()` Library Function
+```c
+void exit(int status);
+```
+
+- The exit() function provides a higher-level interface and is part of the C Standard Library.
+- Before calling _exit(), exit() performs several actions:
+  - Calls exit handlers (functions registered with atexit() or on_exit()).
+  - Flushes the stdio stream buffers to ensure any buffered data is written before the process terminates.
+  - Then, it calls _exit() with the provided status code.
+- Unlike _exit(), which is specific to UNIX, exit() is a standard function available in any C implementation.
 ### 7. Monitoring Child Processes
 ### 8. Program Execution
 
