@@ -115,5 +115,7 @@ When `fork()` is called in a process, it creates a new child process. Conceptual
 ### 4. Process Termination
 ### 5. Monitoring Child Processes
 ### 6. Program Execution
-### 7. Moreeeeeeeeeeeee
+### 7. Process types
+### 8. Process state
+### 9. more
 
