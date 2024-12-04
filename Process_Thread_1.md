@@ -62,7 +62,31 @@ The kernel maintains a page table for each
 process. The page table describes the location of each page in the process’s virtual address space (the set of all virtual memory pages available to the process).
 Each entry in the page table either indicates the location of a virtual page in RAM
 or indicates that it currently resides on disk.
-## 2. Basic Process functions: Creation, Termination, Monitoring Child and Execution.
+### 2. Process types
+ There are different types of processes in a Linux system. These types include user processes, daemon 
+processes, and kernel processes.
+#### 2.1 User Processes
+ Most processes in the system are user processes. A user process is one that is initiated by a regular user 
+account and runs in user space. Unless it is run in a way that gives the process special permissions, an 
+ordinary user process has no special access to the processor or to files on the system that don't belong to 
+the user who launched the process
+#### 2.2 Daemon Process
+- A daemon process is an application that is designed to run in the background, typically managing some kind 
+of ongoing service. A daemon process might listen for an incoming request for access to a service.
+-  Although daemon processes are typically managed as services by the root user, daemon processes often 
+run as non-root users by a user account that is dedicated to the service. By running daemons under different 
+user accounts, a system is better protected in the event of an attack.
+- Systems often start daemons at boot time and have them run continuously until the system is shut down. 
+Daemons can also be started or stopped on demand, set to run at particular system run levels.
+#### 2.3 Kernel Processes
+- Kernel processes execute only in kernel space. They are similar to daemon processes. The primary 
+difference is that kernel processes have full access to kernel data structures, which makes them more 
+powerful than daemon processes that run in user space. 
+- Kernel processes also are not as flexible as daemon processes. You can change the behavior of a daemon 
+process by changing configuration files and reloading the service. Changing kernel processes, however, 
+may require recompiling the kernel.
+### 3. Process state
+## 4. Basic Process functions: Creation, Termination, Monitoring Child and Execution.
 - `fork()` System Call:
   + Creates a new child process, which is an almost exact duplicate of the parent process.
   + The child inherits copies of the parent's stack, data, heap, and text segments.
@@ -81,7 +105,7 @@ or indicates that it currently resides on disk.
  
 ![image](https://github.com/user-attachments/assets/9a845495-3e7c-4c7a-b554-6b7378e9ac7e)
 
-### 3. Process Creation
+### 5. Process Creation
 - The `fork()` system call creates a new process, the child, which is an almost exact
 duplicate of the calling process, the parent. The two processes are executing the same program **text**, but they have separate copies of the **stack**, **data**, and **heap** segments. The child’s stack, data, and heap segments are initially exact duplicates of the corresponding parts the parent’s memory. After the `fork()`, each process can modify the variables in its **stack**, **data**, and **heap** segments without affecting the other process.
 - We can distinguish the two processes via the
@@ -112,10 +136,9 @@ When `fork()` is called in a process, it creates a new child process. Conceptual
 
 ![image](https://github.com/user-attachments/assets/370dd1c4-9d4b-440c-8024-3b04093f39bb)
 
-### 4. Process Termination
-### 5. Monitoring Child Processes
-### 6. Program Execution
-### 7. Process types
-### 8. Process state
+### 6. Process Termination
+### 7. Monitoring Child Processes
+### 8. Program Execution
+
 ### 9. more
 
