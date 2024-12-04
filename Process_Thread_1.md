@@ -86,6 +86,35 @@ powerful than daemon processes that run in user space.
 process by changing configuration files and reloading the service. Changing kernel processes, however, 
 may require recompiling the kernel.
 ### 3. Process state
+ When a process is created, the system assigns it a state. The state field of the process descriptor describes 
+the current state of the process. 
+
+![image](https://github.com/user-attachments/assets/205d9494-a64a-494f-be23-3cda16c1e4e4)
+
+The following typical process states are possible on computer systems of all kinds. In most of these states, processes are "stored" on main memory:
+#### 3.1 Created state
+When a process is first created, it occupies the "created" or "new" state. In this state, the process awaits admission to the "ready" state. Admission will be approved or delayed by a long-term scheduler (admission scheduler).
+#### 3.2 Waiting state
+- A "ready" or "waiting" process has been loaded into main memory (RAM) and is awaiting execution on a CPU (to be context switched onto the CPU by the dispatcher (short-term scheduler)). There may be many "ready" processes at any one point of the system's execution.
+- A ready queue (run queue) is used in computer scheduling. The CPU is only capable of handling one process at a time. Processes that are ready for the CPU are kept in a queue for "ready" processes. 
+#### 3.3 Running state
+A process moves into the running state when it is chosen for execution. The process's instructions are executed by one of the CPUs of the system. There is at most one running process per CPU. A process can run in either of the two modes, namely **kernel mode** or **user mode.**
+- Kernel mode:
+  + Processes in kernel mode can access both: kernel and user addresses.
+  + Kernel mode allows unrestricted access to hardware including execution of privileged instructions.
+  + Various instructions (such as I/O instructions and halt instructions) are privileged and can be executed only in kernel mode.
+  + A system call from a user program leads to a switch to kernel mode.
+- User mode:
+  + Processes in user mode can access their own instructions and data but not kernel instructions and data (or those of other processes).
+  + When the computer system is executing on behalf of a user application, the system is in user mode. However, when a user application requests a service from the operating system (via a system call), the system must transition from user to kernel mode to fulfill the request.
+  + User mode avoids various catastrophic failures:
+    + is an isolated virtual address space for each process in user mode.
+    + User mode ensures isolated execution of each process so that it does not affect other processes as such.
+    + No direct access to any hardware device is allowed.
+#### 3.4 Blocked state
+#### 3.5 Terminated state
+#### 3.6 Additional process states
+
 ## 4. Basic Process functions: Creation, Termination, Monitoring Child and Execution.
 - `fork()` System Call:
   + Creates a new child process, which is an almost exact duplicate of the parent process.
