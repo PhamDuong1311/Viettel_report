@@ -206,7 +206,26 @@ void exit(int status);
 - Unlike _exit(), which is specific to UNIX, exit() is a standard function available in any C implementation.
 ### 7. Monitoring Child Processes
  In many application designs, a parent process needs to know when one of its child
- processes changes state—when the child terminates or is stopped by a signal. There are 2 way to 
+ processes changes state—when the child terminates or is stopped by a signal. There are two techniques used to monitor child processes: the `wait()` system
+ call (and its variants) and the use of the `SIGCHLD` signal.
+#### 7.1 Waiting on a Child Process
+The `wait()` system call waits for one of the children of the calling process to termi
+nate and returns the termination status of that child in the buffer pointed to by `status`.
+
+```c
+  pid_t wait(int *status);
+```
+
+ The wait() system call does the following:
+ - If no (previously unwaited-for) child of the calling process has yet terminated,
+ the call blocks until one of the children terminates. If a child has already termi
+nated by the time of the call, `wait()` returns immediately.
+- If status is not `NULL`, information about how the child terminated is returned in
+ the integer to which status points. We describe the information returned in status
+ in Section 26.1.3.
+- The kernel adds the process CPU times (Section 10.7) and resource usage statistics
+ (Section 36.1) to running totals for all children of this parent process.
+- As its function result, wait() returns the process ID of the child that has terminated.
 ### 8. Program Execution
 
 ### 9. IPC
