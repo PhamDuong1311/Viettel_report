@@ -99,22 +99,18 @@ When a process is first created, it occupies the "created" or "new" state. In th
 - A ready queue (run queue) is used in computer scheduling. The CPU is only capable of handling one process at a time. Processes that are ready for the CPU are kept in a queue for "ready" processes. 
 #### 3.3 Running state
 A process moves into the running state when it is chosen for execution. The process's instructions are executed by one of the CPUs of the system. There is at most one running process per CPU. A process can run in either of the two modes, namely **kernel mode** or **user mode.**
-- Kernel mode:
-  + Processes in kernel mode can access both: kernel and user addresses.
-  + Kernel mode allows unrestricted access to hardware including execution of privileged instructions.
-  + Various instructions (such as I/O instructions and halt instructions) are privileged and can be executed only in kernel mode.
-  + A system call from a user program leads to a switch to kernel mode.
-- User mode:
-  + Processes in user mode can access their own instructions and data but not kernel instructions and data (or those of other processes).
-  + When the computer system is executing on behalf of a user application, the system is in user mode. However, when a user application requests a service from the operating system (via a system call), the system must transition from user to kernel mode to fulfill the request.
-  + User mode avoids various catastrophic failures:
-    + is an isolated virtual address space for each process in user mode.
-    + User mode ensures isolated execution of each process so that it does not affect other processes as such.
-    + No direct access to any hardware device is allowed.
+- Kernel mode: The process has access to the memory system and can execute privileges.
+- User mode: The process has access only to the main memory and data, but no access to system resources or other processes.
 #### 3.4 Blocked state
+A process transitions to a blocked state when it cannot carry on without an external change in state or event occurring. For example, a process may block on a call to an I/O device such as a printer, if the printer is not available. Processes also commonly block when they require user input, or require access to a critical section which must be executed atomically. Such critical sections are protected using a synchronization object such as a semaphore or mutex.
 #### 3.5 Terminated state
+A process may be terminated, either from the "running" state by completing its execution or by explicitly being killed. In either of these cases, the process moves to the "terminated" state. The underlying program is no longer executing, but the process remains in the process table as a zombie process until its parent process calls the wait system call to read its exit status, at which point the process is removed from the process table, finally ending the process's lifetime. 
 #### 3.6 Additional process states
+##### a. Swapped out and waiting
+(Also called suspended and waiting.) In systems that support virtual memory, a process may be swapped out, that is, removed from main memory and placed on external storage by the scheduler. From here the process may be swapped back into the waiting state.
 
+##### b. Swapped out and blocked
+(Also called suspended and blocked.) Processes that are blocked may also be swapped out. In this event the process is both swapped out and blocked, and may be swapped back in again under the same circumstances as a swapped out and waiting process (although in this case, the process will move to the blocked state, and may still be waiting for a resource to become available).
 ## 4. Basic Process functions: Creation, Termination, Monitoring Child and Execution.
 - `fork()` System Call:
   + Creates a new child process, which is an almost exact duplicate of the parent process.
@@ -169,5 +165,5 @@ When `fork()` is called in a process, it creates a new child process. Conceptual
 ### 7. Monitoring Child Processes
 ### 8. Program Execution
 
-### 9. more
+### 9. IPC
 
