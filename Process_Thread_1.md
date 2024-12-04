@@ -198,13 +198,15 @@ The status argument defines the termination status of the process, which the par
 void exit(int status);
 ```
 
-- The exit() function provides a higher-level interface and is part of the C Standard Library.
-- Before calling _exit(), exit() performs several actions:
+- The `exit()` function provides a higher-level interface and is part of the C Standard Library.
+- Before calling `_exit()`, `exit()` performs several actions:
   - Calls exit handlers (functions registered with atexit() or on_exit()).
   - Flushes the stdio stream buffers to ensure any buffered data is written before the process terminates.
   - Then, it calls _exit() with the provided status code.
 - Unlike _exit(), which is specific to UNIX, exit() is a standard function available in any C implementation.
 ### 7. Monitoring Child Processes
+ In many application designs, a parent process needs to know when one of its child
+ processes changes state—when the child terminates or is stopped by a signal. There are 2 way to 
 ### 8. Program Execution
 
 ### 9. IPC
