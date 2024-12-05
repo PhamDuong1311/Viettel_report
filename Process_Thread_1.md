@@ -216,16 +216,18 @@ nate and returns the termination status of that child in the buffer pointed to b
   pid_t wait(int *status);
 ```
 
- The wait() system call does the following:
- - If no (previously unwaited-for) child of the calling process has yet terminated,
- the call blocks until one of the children terminates. If a child has already termi
-nated by the time of the call, `wait()` returns immediately.
-- If status is not `NULL`, information about how the child terminated is returned in
- the integer to which status points. We describe the information returned in status
- in Section 26.1.3.
-- The kernel adds the process CPU times (Section 10.7) and resource usage statistics
- (Section 36.1) to running totals for all children of this parent process.
-- As its function result, wait() returns the process ID of the child that has terminated.
+The `wait()` system call does the following:
+- Blocking Behavior:
+  + If no child process has terminated, `wait()` blocks (pauses execution) until a child terminates.
+  + If a child has already terminated, `wait()` returns immediately.
+- Returning Exit Status:
+  + If the status pointer is not NULL, wait() stores the termination status of the child in the integer pointed to by status.
+  + The status contains information about whether the child exited normally or was terminated by a signal.
+- Resource Accounting:
+  + The kernel updates the CPU time and resource usage statistics of the terminated child and adds them to the parent’s totals.
+- Return Value:
+  + On success, wait() returns the PID of the terminated child.
+  + On error, it returns -1 and sets errno to indicate the error. The error ECHILD indicates that there are no remaining unwaited-for child processes.
 ### 8. Program Execution
 
 ### 9. IPC
