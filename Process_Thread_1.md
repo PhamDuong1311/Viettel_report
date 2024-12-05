@@ -221,14 +221,11 @@ The `wait()` system call does the following:
   + If no child process has terminated, `wait()` blocks (pauses execution) until a child terminates.
   + If a child has already terminated, `wait()` returns immediately.
 - Returning Exit Status:
-  + If the status pointer is not NULL, wait() stores the termination status of the child in the integer pointed to by status.
+  + If the status pointer is not `NULL`, `wait()` stores the termination status of the child in the integer pointed to by status.
   + The status contains information about whether the child exited normally or was terminated by a signal.
 - Resource Accounting:
   + The kernel updates the CPU time and resource usage statistics of the terminated child and adds them to the parent’s totals.
 - Return Value:
   + On success, wait() returns the PID of the terminated child.
   + On error, it returns -1 and sets errno to indicate the error. The error ECHILD indicates that there are no remaining unwaited-for child processes.
-### 8. Program Execution
-
-### 9. IPC
 
