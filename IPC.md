@@ -1,4 +1,5 @@
-# 1. A Taxonomy of IPC Facilities
+# I. Inter-process communication overview
+## 1. A Taxonomy of IPC Facilities
 The rich variety of UNIX communication and synchroniza
 tion facilities, dividing them into three broad functional categories:
 - **Communication**: These facilities are concerned with exchanging data between
@@ -10,7 +11,7 @@ tion facilities, dividing them into three broad functional categories:
 
 ![image](https://github.com/user-attachments/assets/60939ea4-a2f3-4c7e-9c88-a0ecd970f73c)
 
-# 2. Communication Facilities
+## 2. Communication Facilities
 We can break the communication facilities into two categories:
 - **Data-transfer facilities**:  In order to communicate, one process writes data to
  the IPC facility, and another process reads the data. These facilities require two
@@ -28,7 +29,7 @@ Figure: Exchanging data between two processes using a pipe
  region. Because communication doesn’t require system calls or data transfer
  between user memory and kernel memory, shared memory can provide very
  fast communication.
-## 2.1 Data transfer
+### 2.1 Data transfer
 We can further break data-transfer facilities into the following subcategories:
 - **Byte stream**: The data exchanged via **pipes**, **FIFOs**, and **stream sockets** is an
  undelimited byte stream. Each read operation may read an arbitrary number of
@@ -49,7 +50,7 @@ We can further break data-transfer facilities into the following subcategories:
   - Synchronization between the reader and writer is handled automatically.
   - If no data is available to be read, the reading process will block (pause execution) until data becomes available.
   - This blocking behavior ensures that data is not lost and the reader waits until new data arrives.
-## 2.2 Shared memory
+### 2.2 Shared memory
  Most modern UNIX systems provide three flavors of shared memory: **System V
  shared memory**, **POSIX shared memory**, and **memory mappings**.  
  Note the following general points about shared memory:
@@ -60,4 +61,18 @@ One process should not access shared memory while another is updating it, which 
  memory. (This contrasts with the destructive read semantics described above
  for data-transfer facilities.)
 
-# 3. Synchronization Facilities
+## 3. Synchronization Facilities
+Synchronization allows processes to avoid doing things such as
+ simultaneously updating a shared memory region or the same part of a file. With
+out synchronization, such simultaneous updates could cause an application to pro
+duce incorrect results.
+
+UNIX systems provide the following synchronization facilities:
+- **Semaphores**: A semaphore is a kernel-maintained integer whose value is never
+ permitted to fall below 0. A process can decrease or increase the value of a
+ semaphore. If an attempt is made to decrease the value of the semaphore
+ below 0, then the kernel blocks the operation until the semaphore’s value
+ increases to a level that permits the operation to be performed.
+## 4. Comparing IPC facilities
+
+
