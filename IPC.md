@@ -81,8 +81,7 @@ UNIX systems provide the following synchronization facilities:
 ### 1.1 Definition
 A pipe is a mechanism provided by the operating system to enable communication between processes. It acts as a unidirectional data channel, allowing one process to send data to another process.
 
-![image](https://github.com/user-attachments/assets/e753cbb2-3333-48c9-90ea-7c57cf7f7ad2)
-
+![image](https://github.com/user-attachments/assets/772cc6d3-eb0f-4145-b04c-d53557accf32)
 
 ### 1.2 Features
 - Unidirectional: Data flows in one direction (e.g., process A writes to the pipe, process B reads from it).
@@ -118,6 +117,9 @@ https://github.com/PhamDuong1311/Viettel_report/tree/main/IPC
 ## 2. POSIX Message Queue
 ### 2.1 Definition
 POSIX message queues are a form of interprocess communication (IPC) mechanism present in Linux systems. They make it easy and effective for processes to send and receive messages. 
+
+![image](https://github.com/user-attachments/assets/28f58e27-b0cf-40fd-9943-369f68d3eb69)
+
 ### 2.2 Features
 - POSIX message queues store messages in queues that different processes can use. Each message in the queue has a priority, which makes it possible to get messages in a certain order. Processes can send messages to a queue and get messages from a queue. This lets different processes talk to each other and share info at the same time.
 - One of the best things about POSIX message queues is that they allow for asynchronous contact. This means that processes can send and receive messages without waiting for each other. This makes them good for situations in which processes need to talk to each other without having to wait for each other to answer.
@@ -221,6 +223,7 @@ Shared memory is one of the fastest IPC mechanisms because it allows multiple pr
   - **Sender's Address Space to Kernel Space**: When the sender makes a send call, the data is first copied into a buffer managed by the kernel.
   - **Kernel Space to Receiver's Address Space**: When the receiver makes a receive call, the kernel **copies** the data to the receiver's memory space.
 => This additional copying introduces significant overhead, especially for large messages or frequent data exchanges.
+
 **- Shared Memory:**
 - The kernel creates a memory segment and **maps** it into the address spaces of all participating processes.
 - Data written to this memory segment by one process is immediately accessible to other processes **without any copying overhead**.
