@@ -114,7 +114,7 @@ int pipe(int pipefds[2]);
 - `pipefds[1]`: File descriptor for writing.
 
 ### 1.5 Soure code
-
+https://github.com/PhamDuong1311/Viettel_report/tree/main/IPC
 ## 2. POSIX Message Queue
 ### 2.1 Definition
 POSIX message queues are a form of interprocess communication (IPC) mechanism present in Linux systems. They make it easy and effective for processes to send and receive messages. 
@@ -123,7 +123,7 @@ POSIX message queues are a form of interprocess communication (IPC) mechanism pr
 - One of the best things about POSIX message queues is that they allow for asynchronous contact. This means that processes can send and receive messages without waiting for each other. This makes them good for situations in which processes need to talk to each other without having to wait for each other to answer.
 - POSIX message queues are given a unique name in the file system. This makes it possible for multiple processes to use the same queue by referring to its name. They can also be made as secret queues that only the process of making them can see.
 => Overall, POSIX message queues are a type of IPC mechanism present in Linux systems. Processes can send information to each other through named or unnamed queues. Each message in the queue has a priority, and messages can be read either in the order they were added to the queue (FIFO) or by priority.
-### 2.3 System Calls and Functions
+### 2.3 System Calls
 The POSIX message queues library provides several functions that allow processes to create, manage, send, and receive messages in message queues. Here are the key library functions used in POSIX message queues:
 #### a. `mq_open()` function
 This function is used to open an existing message queue or create a new one in POSIX message queues. It is part of the POSIX message queues library `<mqueue.h> and allows processes to access message queues for interprocess communication.
@@ -202,8 +202,102 @@ The arguments of `mq_getattr()` are:
   - mq_curmsgs: The current number of messages in the message queue.
 
 The return value of `mq_getattr()` is an integer indicating the success or failure of the operation. It returns 0 on success, indicating that the attributes of the message queue were successfully retrieved and stored in the provided struct mq_attr object. If an error occurs, it returns -1, and you can check the specific reason by examining the value of errno.
+### 2.4 Source code 
+https://github.com/PhamDuong1311/Viettel_report/tree/main/IPC
 ## 3. POSIX Shared Memory
+### 3.1 Definition
+Shared memory is one of the fastest IPC mechanisms because it allows multiple processes to access the same region of memory directly. This shared memory region is allocated by the kernel and can be mapped into the address spaces of all involved processes.
 
+![image](https://github.com/user-attachments/assets/0cb1af9a-8d11-4e63-9aab-2544fd008c39)
+
+### 3.2 Steps for using shared memory in IPC
+- Creation/Allocation of Shared Memory
+- Mapping Shared Memory
+- Synchronization
+- Signaling
+- Detachment and Deletion
+### 3.3 Why is shared memory the fastest IPC mechanisnm?
+**- For Message Queues, Pipes, and FIFOs (Data is copied twice):**
+  - **Sender's Address Space to Kernel Space**: When the sender makes a send call, the data is first copied into a buffer managed by the kernel.
+  - **Kernel Space to Receiver's Address Space**: When the receiver makes a receive call, the kernel **copies** the data to the receiver's memory space.
+=> This additional copying introduces significant overhead, especially for large messages or frequent data exchanges.
+**- Shared Memory:**
+- The kernel creates a memory segment and **maps** it into the address spaces of all participating processes.
+- Data written to this memory segment by one process is immediately accessible to other processes **without any copying overhead**.
+- Processes communicate by directly reading and writing to this shared memory region, avoiding intermediate kernel involvement.
+### 3.4 System Call
+#### a. `shm_open` function
+`shm_open` is like the open system call for files. It opens a POSIX shared memory object and makes it available to the calling process via the returned file descriptor.
+
+```c
+int shm_open (const char *name, int oflag, mode_t mode);
+```
+
+The arguments of `shm_open`:
+- name: A null-terminated string of up to NAME_MAX characters, starting with / and containing no other slashes.
+- oflag: A bitmask combining one of the following:
+  - `O_RDONLY`: Open the object for read-only access.
+  - `O_RDWR`: Open the object for reading and writing.
+  - `O_CREAT`: Create the object if it doesn’t exist.
+  - `O_EXCL`: When used with `O_CREAT`, ensures the call fails if the object already exists (sets `errno` to `EEXIST`).
+  - `O_TRUNC`: Truncates the object to zero bytes if it already exists.
+- mode (Optional if `O_CREAT` is not used):
+  - Specifies the permissions for the object if it’s created.
+  - Similar to file permissions in Linux (0666 for read/write for owner, group, and others).
+
+Return Value: On success: A file descriptor (fd) is returned, which represents the shared memory object. On failure: Returns -1 and sets errno to indicate the error.
+#### b. `shm_unlink` function
+```c
+int shm_unlink (const char *name);
+```
+
+`shm_unlink` removes the previously created POSIX shared memory object. The name is the name of the shared memory object as described under `shm_open`, above.
+#### c. `ftruncate` function
+```c
+int ftruncate (int fd, off_t length);
+```
+
+The `ftruncate` system call makes the object referred to by the file descriptor, `fd`, of size `length` bytes. When a POSIX shared memory is created, it is of size zero bytes. Using `ftruncate`, we can make the POSIX shared memory object of size length bytes. 
+
+`ftruncate` returns zero on success. In case of error, ftruncate` returns -1 and errno is set to the cause of the error.
+#### d. `mmap` function
+```c
+void *mmap (void *addr, size_t length, int prot, int flags,
+            int fd, off_t offset);
+```
+
+The `mmap` arguments for POSIX Shared Memory:
+- addr:
+  - Specifies the address at which the shared memory is mapped.
+  - Generally set to `NULL`, allowing the kernel to choose an appropriate address.
+- length:
+  - The size of the memory region to map.
+  - For simplicity, this should match the size of the shared memory object set using `ftruncate`.
+- prot (Protection Flags): Defines the access permissions for the mapped memory region:
+  - `PROT_READ`: Allows read access.
+  - `PROT_WRITE`: Allows write access.
+  - Combined for shared memory: `PROT_READ` | `PROT_WRITE`.
+- flags:
+  - Specifies the behavior of the mapped memory.
+  - For shared memory, use: `MAP_SHARED`: Changes made to the memory region are visible to all processes sharing the memory.
+- fd: The file descriptor returned by `shm_open`.
+- offset:
+  - Specifies the starting point of the mapping within the shared memory object.
+  - Typically set to `0` to map from the beginning of the shared memory object.
+ 
+Return Value:
+- On success: Returns a pointer to the memory-mapped region.
+- On failure: Returns `MAP_FAILED` (defined as `(void *)-1`) and sets `errno` to indicate the error.
+#### e. `munmap` function
+```c
+int munmap (void *addr, size_t length);
+```
+
+`munmap` unmapps the shared memory object at location pointed by `addr` and having size, `length`. On success, munmap returns 0. In case of error, munmap returns -1 and errno is set to the cause of the error.
+### 3.5 Source code
+https://github.com/PhamDuong1311/Viettel_report/tree/main/IPC
+
+https://www.softprayog.in/programming/interprocess-communication-using-posix-shared-memory-in-linux
 # III. Synchronization
 
 # IV. Signal
