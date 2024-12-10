@@ -81,7 +81,8 @@ UNIX systems provide the following synchronization facilities:
 ### 1.1 Definition
 A pipe is a mechanism provided by the operating system to enable communication between processes. It acts as a unidirectional data channel, allowing one process to send data to another process.
 
-![alt text](image.png)
+![image](https://github.com/user-attachments/assets/e753cbb2-3333-48c9-90ea-7c57cf7f7ad2)
+
 
 ### 1.2 Features
 - Unidirectional: Data flows in one direction (e.g., process A writes to the pipe, process B reads from it).
