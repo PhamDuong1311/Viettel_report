@@ -299,8 +299,6 @@ int munmap (void *addr, size_t length);
 `munmap` unmapps the shared memory object at location pointed by `addr` and having size, `length`. On success, munmap returns 0. In case of error, munmap returns -1 and errno is set to the cause of the error.
 ### 3.5 Source code
 https://github.com/PhamDuong1311/Viettel_report/tree/main/IPC
-
-https://www.softprayog.in/programming/interprocess-communication-using-posix-shared-memory-in-linux
 # III. Synchronization
 
 # IV. Signal
