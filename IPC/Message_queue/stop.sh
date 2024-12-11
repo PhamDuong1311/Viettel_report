@@ -1,2 +1,3 @@
-rm sender_process
-rm receiver_process
+rm server
+rm client1
+rm client2

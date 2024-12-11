@@ -1,2 +1,3 @@
-gcc sender_process.c -o sender_process -lrt
-gcc receiver_process.c -o receiver_process -lrt
+gcc server.c -o server -lrt
+gcc client1.c -o client1 -lrt
+gcc client2.c -o client2 -lrt
