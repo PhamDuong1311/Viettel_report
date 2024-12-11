@@ -300,5 +300,85 @@ int munmap (void *addr, size_t length);
 ### 3.5 Source code
 https://github.com/PhamDuong1311/Viettel_report/tree/main/IPC
 # III. Synchronization
+## 1. POSIX Semaphores
+### 1.1 Basic Semaphore
+#### a. Semaphore
+Semaphores in software function similarly to railroad semaphores, with the kernel managing them, and processes or threads performing semaphore operations. Just as railroad semaphores control train traffic to prevent accidents, software semaphores regulate access to shared resources to avoid conflicts between processes or threads. Proper use of semaphores ensures smooth system operation, but improper usage can lead to run-time errors, ranging from mild database corruption to more critical issues in process control or real-time systems.
+#### b. Semaphore operations
+Semaphores are objects created by the kernel and are represented as non-negative integers, which are managed through system calls. There are three basic operations that can be performed on a semaphore:
+- **Creation**: A semaphore is created with an initial non-negative integer value, indicating how many processes or threads can access a particular resource.
+- **P Operation (Wait/Acquire/Lock)**: This operation is used to decrease the value of the semaphore. If the value is greater than zero, it allows a process to proceed. If the value is zero, the process is blocked until the value becomes greater than zero. The P operation is often associated with terms like "wait," "acquire," or "lock."
+- **V Operation (Signal/Release/Unlock)**: This operation increases the value of the semaphore, signaling that a process has released a resource. It may unblock other processes that were waiting for the semaphore. The V operation is also known by terms like "signal," "release," or "unlock."
 
+### 1.2 POSIX named semaphore calls
+Semaphores are used for synchronization of processes and threads. Semaphores are clubbed with message queues and shared memory under the Interprocess Communication (IPC) facilities in Unix-like systems such as Linux. There are two varieties of semaphores, the traditional System V semaphores and the newer POSIX semaphores. In this post, I will look at the POSIX semaphores.
+
+There are two types of POSIX semaphores – named and unnamed. As the terminology suggests, named semaphores have a name, which is of the format /somename. The first character is a forward slash, followed by one or more characters, none of which is a slash. We will first look at the named semaphores and then the unary.named ones.
+#### a. `sem_open` function
+```c
+sem_t *sem_open (const char *name, int oflag);
+sem_t *sem_open (const char *name, int oflag,
+                 mode_t mode, unsigned int value);
+```
+
+**The arguments of `sem_open`:**
+- name: The name of the semaphore. It must be a string starting with a forward slash `(/)`, followed by a unique identifier (e.g., `/my_semaphore`).
+- oflag: This is a set of flags that specify the behavior of the `sem_open` call. It can be a combination of the following flags:
+ - `O_CREAT`: If the semaphore doesn't exist, it will be created.
+ - `O_EXCL`: Ensures that the semaphore is created only if it doesn't already exist. If the semaphore already exists, the call fails (with an error).
+- mode: This parameter is used when the semaphore is created with the `O_CREAT` flag. It specifies the permissions for the semaphore. The value of mode is masked by the current umask of the process.
+ - For example, `0666` gives read and write permissions to everyone.
+- value: This parameter is used only when `O_CREAT` is specified. It sets the initial value of the semaphore. A binary semaphore is created if value is set to `1`, and a counting semaphore is created with the specified value (e.g., `0` or any positive number).
+
+**Return Value of `sem_open`:**
+- On success, `sem_open` returns a pointer to the semaphore (`sem_t *`). This pointer can be used in subsequent semaphore operations (such as `sem_wait()`, `sem_post()`, etc.).
+- On failure, sem_open returns `SEM_FAILED` (which is (`(sem_t *) -1`)). In this case, errno is set to indicate the error.
+
+#### b. `sem_post` function
+```c
+int sem_post (sem_t *sem);
+```
+
+`sem_post` increments the semaphore. It provides the V operation for the semaphore. It returns 0 on success and -1 on error.
+#### c. `sem_wait` function
+```c
+int sem_wait (sem_t *sem);
+```
+
+`sem_wait` decrements the semaphore pointed by sem. If the semaphore value is non-zero, the decrement happens right away. If the semaphore value is zero, the call blocks till the time semaphore becomes greater than zero and the decrement is done. `sem_wait` returns zero on success and -1 on error. In case of error, the semaphore value is left unchanged and errno is set to the appropriate error number. `sem_wait` provides the call for the P operation for the semaphore.
+#### d. `sem_trywait` function
+```c
+int sem_trywait (sem_t *sem);
+```
+
+`sem_trywait` is just like the sem_wait call, except that, if the semaphore value is zero, it does not block but returns immediately with errno set to `EAGAIN`. In other system calls we have flags like `IPC_NOWAIT`, but here, we have a full-fledged system call for that purpose.
+#### e. `sem_timedwait` function
+```c
+int sem_timedwait (sem_t *sem, const struct timespec *abs_timeout);
+```
+
+`sem_timedwait` is also like the `sem_wait` call, except that, there is timer specified with the pointer, `abs_timeout`. If the semaphore value is greater than zero, it is decremented and the timeout value pointed by abs_timeout is not used. That is, in that case, the call works just like the `sem_wait` call. If the semaphore value is zero, the call blocks, the maximum duration of blocking being the time till the timer goes off. If the semaphore value becomes greater than zero during the blocking period, the semaphore is decremented immediately and the call returns. Otherwise, the timer goes off and the call returns with errno set to `ETIMEDOUT`. The timer is specified in the `struct timespec`, which is:
+
+```c
+struct timespec { 
+    time_t tv_sec;      /* Seconds */ 
+    long   tv_nsec;     /* Nanoseconds [0 .. 999999999] */
+};
+```
+#### f. `sem_getvalue` function
+```c
+int sem_getvalue (sem_t *sem, int *sval);
+```
+
+`sem_getvalue` gets the value of semaphore pointed by sem. The value is returned in the integer pointed by `sval`. It returns 0 on success and -1 on error, with `errno` indicating the actual error.
+#### g. `sem_unlink` function
+```c
+int sem_unlink (const char *name);
+```
+
+`sem_unlink` removes the semaphore associated with the name.
+### 1.3 POSIX unnamed semaphore calls
+## 2. File lock
+## 3. Mutex
+## 4. Condition variable
 # IV. Signal
