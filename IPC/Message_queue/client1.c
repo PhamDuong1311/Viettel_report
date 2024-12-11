@@ -21,6 +21,10 @@ int main() {
 
     printf("Client received string: %s\n", in_buffer1);
 
+    if (mq_close(qd) == -1) {
+        perror ("Client: mq_close");
+        exit (1);
+    }
 
     return 0;
 }
