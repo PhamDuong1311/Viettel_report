@@ -301,9 +301,9 @@ int munmap (void *addr, size_t length);
 https://github.com/PhamDuong1311/Viettel_report/tree/main/IPC
 # III. Synchronization
 ## 1. POSIX Semaphores
-### 1.1 Basic Semaphore
+### 1.1 Basic POSIX Semaphore
 #### a. Semaphore
-Semaphores in software function similarly to railroad semaphores, with the kernel managing them, and processes or threads performing semaphore operations. Just as railroad semaphores control train traffic to prevent accidents, software semaphores regulate access to shared resources to avoid conflicts between processes or threads. Proper use of semaphores ensures smooth system operation, but improper usage can lead to run-time errors, ranging from mild database corruption to more critical issues in process control or real-time systems.
+Semaphore is a synchronization mechanism used to coordinate access to a shared resource among multiple threads or processes in a multithreaded or multiprocess system. 
 #### b. Semaphore operations
 Semaphores are objects created by the kernel and are represented as non-negative integers, which are managed through system calls. There are three basic operations that can be performed on a semaphore:
 - **Creation**: A semaphore is created with an initial non-negative integer value, indicating how many processes or threads can access a particular resource.
@@ -311,9 +311,7 @@ Semaphores are objects created by the kernel and are represented as non-negative
 - **V Operation (Signal/Release/Unlock)**: This operation increases the value of the semaphore, signaling that a process has released a resource. It may unblock other processes that were waiting for the semaphore. The V operation is also known by terms like "signal," "release," or "unlock."
 
 ### 1.2 POSIX named semaphore calls
-Semaphores are used for synchronization of processes and threads. Semaphores are clubbed with message queues and shared memory under the Interprocess Communication (IPC) facilities in Unix-like systems such as Linux. There are two varieties of semaphores, the traditional System V semaphores and the newer POSIX semaphores. In this post, I will look at the POSIX semaphores.
-
-There are two types of POSIX semaphores – named and unnamed. As the terminology suggests, named semaphores have a name, which is of the format /somename. The first character is a forward slash, followed by one or more characters, none of which is a slash. We will first look at the named semaphores and then the unary.named ones.
+POSIX Named Semaphore is a type of semaphore that is associated with a unique name, allowing **different processes** to access the same semaphore through that name.
 #### a. `sem_open` function
 ```c
 sem_t *sem_open (const char *name, int oflag);
@@ -378,7 +376,263 @@ int sem_unlink (const char *name);
 
 `sem_unlink` removes the semaphore associated with the name.
 ### 1.3 POSIX unnamed semaphore calls
+POSIX unnamed semaphores are used for synchronization between threads within the same process or processes that share memory. Unlike named semaphores, unnamed semaphores do not have a system-wide name and must be initialized directly in memory.
+#### a. `sem_init` function
+```c
+int sem_init(sem_t *sem, int pshared, unsigned int value);
+```
+
+- **sem**: Pointer to the semaphore to initialize.
+- **pshared**:
+  - 0: Semaphore is shared among threads of the same process.
+  - Non-zero: Semaphore is shared among processes, requiring shared memory.
+- **value**: Initial value of the semaphore.
+
+**Return Value**:
+- `0` on success.
+- `-1` on failure, with errno set to indicate the error.
+#### b. `sem_destroy` function
+```c
+int sem_destroy(sem_t *sem);
+```
+
+- Frees resources associated with the semaphore.
+- Can only be called when there are no threads waiting on the semaphore.
+#### c. `sem_wait`, `sem_post`, `sem_trywait`, etc. funtion
+The same operations (sem_wait, sem_post, sem_trywait, etc.) used for named semaphores can be applied to unnamed semaphores.
 ## 2. File lock
+File locking ensures that a file is accessed safely in a multi-process or multi-threaded environment. It prevents data corruption or inconsistencies by managing concurrent access.
+### 2.1 Types of File Locks
+- **Shared Lock** (`LOCK_SH`):
+  - Allows multiple processes to read the file simultaneously.
+  - Other processes can also acquire a shared lock but not an exclusive lock.
+  - Used when a process only needs to read the file without modifying it.
+- **Exclusive Lock** (`LOCK_EX`):
+  - Ensures that only one process has access to the file.
+  - Other processes are blocked from acquiring any lock (shared or exclusive).
+  - Used when a process needs to write to the file.
+- **Unlock** (`LOCK_UN`):
+  - Removes the lock on the file.
+  - Allows other processes to acquire locks after the file is unlocked.
+### 2.2 File Locking Mechanisms
+#### a. `flock` System Call
+`flock` is a simple and portable way to manage file locks. It works on entire files (not byte ranges) and is widely used for lightweight file locking.
+
+```c
+int flock(int fd, int operation);
+```
+
+- **fd**: File descriptor obtained from `open`.
+- **operation**: Defines the type of lock:
+  - `LOCK_SH`: Shared lock.
+  - `LOCK_EX`: Exclusive lock.
+  - `LOCK_UN`: Unlock.
+  - `LOCK_NB`: Non-blocking option (returns immediately if the lock cannot be acquired).
+
+#### b. `fcntl` System Call
+The `fcntl` system call provides more advanced and flexible file locking, including the ability to lock specific byte ranges within a file.
+
+```c
+int fcntl(int fd, int cmd, ... /* struct flock *lock */);
+```
+
+- **fd**: File descriptor of the file.
+- **cmd**: Command, typically `F_SETLK`, `F_SETLKW`, or `F_GETLK`:
+  - `F_SETLK`: Set a lock (non-blocking).
+  - `F_SETLKW`: Set a lock (blocking, waits if lock is unavailable).
+  - `F_GETLK`: Check for an existing lock without setting one.
+- **struct flock**: Defines the lock type and range:
+
+```c
+struct flock {
+    short l_type;   /* F_RDLCK, F_WRLCK, or F_UNLCK */
+    short l_whence; /* SEEK_SET, SEEK_CUR, SEEK_END */
+    off_t l_start;  /* Offset where the lock starts */
+    off_t l_len;    /* Number of bytes to lock */
+    pid_t l_pid;    /* Process ID holding the lock (for F_GETLK) */
+};
+```
 ## 3. Mutex
+A mutex (short for "mutual exclusion") is a synchronization primitive that allows only one thread to access a critical section at a time.
+- A mutex ensures that only one thread can lock it at a time.
+- If another thread tries to lock a mutex that is already locked, it is put into a waiting state until the mutex becomes available.
+### 3.1 `pthread_mutex_init` fucntion
+```c
+int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
+```
+
+- mutex: Pointer to the mutex object to initialize.
+- attr: Mutex attributes (can be `NULL` for default attributes).
+
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., EINVAL, ENOMEM).
+### 3.2 `pthread_mutex_destroy` function
+```c
+int pthread_mutex_destroy(pthread_mutex_t *mutex);
+```
+
+- mutex: Pointer to the mutex to destroy.
+  
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., `EBUSY` if the mutex is still locked).
+### 3.3 `pthread_mutex_lock` fucntion
+```c
+int pthread_mutex_lock(pthread_mutex_t *mutex);
+```
+
+- mutex: Pointer to the mutex to lock.
+
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., `EDEADLK` if there is a deadlock, `EINVAL` for invalid mutex).
+### 3.4 `pthread_mutex_trylock` function
+```c
+int pthread_mutex_trylock(pthread_mutex_t *mutex);
+```
+
+- mutex: Pointer to the mutex to attempt to lock.
+
+**Return value**:
+- 0 if the mutex is successfully locked.
+- `EBUSY` if the mutex is already locked (i.e., the lock cannot be acquired immediately).
+### 3.5 `pthread_mutex_unlock` function
+```c
+int pthread_mutex_unlock(pthread_mutex_t *mutex);
+```
+
+- mutex: Pointer to the mutex to unlock.
+
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., `EPERM` if the caller does not hold the lock
+### 3.6 `pthread_mutexattr_init` function
+```c
+int pthread_mutexattr_init(pthread_mutexattr_t *attr);
+```
+
+- attr: Pointer to the mutex attributes object to initialize.
+
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., `ENOMEM` if memory allocation fails).
+### 3.7 `pthread_mutexattr_destroy` function
+```c
+int pthread_mutexattr_destroy(pthread_mutexattr_t *attr);
+```
+
+- attr: Pointer to the mutex attributes object to destroy.
+
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., `EINVAL` if attr is invalid or not initialized).
 ## 4. Condition variable
+Condition variables are used to synchronize threads by allowing one thread to signal another to proceed. They are typically used in conjunction with a mutex to ensure atomicity when modifying shared data.
+### 4.1. pthread_cond_init
+```c
+int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr);
+```
+
+- cond: Pointer to the condition variable to initialize.
+- attr: Condition variable attributes (can be `NULL` for default attributes).
+
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., `ENOMEM`, `EINVAL`).
+### 4.2. pthread_cond_destroy
+```c
+int pthread_cond_destroy(pthread_cond_t *cond);
+```
+
+- cond: Pointer to the condition variable to destroy.
+
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., `EBUSY` if a thread is currently waiting on the condition variable).
+### 4.3. pthread_cond_wait
+```c
+int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
+```
+
+- cond: Pointer to the condition variable on which to wait.
+- mutex: Pointer to the mutex that will be released while the thread waits.
+
+This function atomically releases the mutex and causes the calling thread to wait on the condition variable until it is signaled.
+
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., `EINVAL` if mutex is not locked by the calling thread).
+### 4.4. pthread_cond_signal
+```c
+int pthread_cond_signal(pthread_cond_t *cond);
+```
+
+- cond: Pointer to the condition variable to signal.
+
+This function unblocks one thread that is waiting on the condition variable, if any.
+
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., `EINVAL` if cond is invalid).
+### 4.5. pthread_cond_broadcast
+```c
+int pthread_cond_broadcast(pthread_cond_t *cond);
+```
+
+- cond: Pointer to the condition variable to broadcast to.
+
+This function unblocks all threads waiting on the condition variable.
+
+**Return value**:
+- 0 on success.
+- Error number on failure (e.g., `EINVAL` if cond is invalid).
 # IV. Signal
+Signals are a mechanism for one process or thread to send notifications to another. They are asynchronous notifications that can interrupt the normal flow of program execution.
+### 1. signal
+```c
+sighandler_t signal(int signum, sighandler_t handler);
+```
+
+- signum: The signal number to be caught (e.g., `SIGINT, SIGTERM`).
+- handler: A function pointer to a signal handler. A special value `SIG_IGN` can be used to ignore the signal, and `SIG_DFL` resets the default signal handler.
+
+**Return value**:
+- The previous signal handler on success.
+- `SIG_ERR` on failure.
+### 2. sigaction
+```c
+int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
+```
+
+- signum: The signal number.
+- act: A pointer to a struct sigaction containing the new action for the signal.
+- oldact: A pointer to a struct sigaction to store the previous action (can be `NULL`).
+
+**Return value**:
+- 0 on success.
+- -1 on error, and errno will be set to indicate the error.
+### 3. sigwait
+```c
+int sigwait(const sigset_t *set, int *sig);
+```
+
+- set: A set of signals to wait for (created using sigemptyset or sigaddset).
+- sig: A pointer to an integer where the signal number will be stored.
+This function waits for one of the signals in set to be delivered.
+
+**Return value**:
+- 0 on success.
+- -1 on error, and errno will be set to indicate the error.
+### 4. raise
+```c
+int raise(int sig);
+```
+
+- sig: The signal number to send to the calling process.
+
+This function sends a signal to the current process (e.g., `raise(SIGINT)`).
+
+**Return value**:
+- 0 on success.
+- -1 on error, and errno will be set to indicate the error.
