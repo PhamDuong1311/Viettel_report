@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define PORT 8080
+#define PORT 8888
 #define SERVER_IP "127.0.0.1"
 #define BUFFER_SIZE 1024
 #define FILE_DIR_CLIENT "./file_client_3"

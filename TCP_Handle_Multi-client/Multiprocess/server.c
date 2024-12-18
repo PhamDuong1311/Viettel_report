@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define PORT 8000
+#define PORT 8080
 #define FILE_DIR "./file_server"
 
 void send_file(int sock, const char *filename) {
@@ -19,7 +19,7 @@ void send_file(int sock, const char *filename) {
     FILE *file = fopen(filepath, "rb");
     if (file == NULL) {
         perror("fopen()");
-        exit(1);
+        return;
     }
 
     while ((read_byte = fread(buffer, 1, sizeof(buffer), file)) > 0) {
@@ -39,7 +39,7 @@ void handle_client(int sock) {
 
     if ((byte_received = recv(sock, buffer, sizeof(buffer), 0)) <= 0) {
         perror("recv()");
-        exit(1);
+        return;
     }
     buffer[byte_received] = '\0';
     printf("Client requested file: %s\n", buffer);
@@ -81,15 +81,19 @@ int main() {
             exit(1);
         }
 
-
         printf("Connection accepted from %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-        printf("Quantity of connected client: %d\n", ++count);
+        printf("Quantity of connected clients: %d\n", ++count);
 
         if ((child = fork()) == 0) {
             close(server_socket);
             handle_client(client_socket);
+            close(client_socket);
+            exit(0);
         }
+
+        close(client_socket);
     }
-    close(client_socket);
+
+    close(server_socket);
     return 0;
 }

@@ -5,10 +5,10 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define PORT 8080
+#define PORT 8888
 #define SERVER_IP "127.0.0.1"
 #define BUFFER_SIZE 1024
-#define FILE_DIR_CLIENT "./file_client_3"
+#define FILE_DIR_CLIENT "./file_client_1"
 
 void receive_file(int sock, const char *filename) {
     char buffer[BUFFER_SIZE];
