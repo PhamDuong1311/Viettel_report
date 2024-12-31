@@ -58,13 +58,13 @@ int main() {
 ```
 ## 1.2 Ví dụ cụ thể về một use case mà process chuyển đổi giữa kernel mode và user mode
 Ví dụ về việc truyền, nhận dữ liệu giữa 2 thiết bị qua mạng:
-1. Tạo dữ liệu trong User Mode
+### a. Tạo dữ liệu trong User Mode
 - Ứng dụng cần gửi dữ liệu một chuỗi văn bản "Hello, Server!".
 - Dữ liệu này được lưu trữ trong vùng nhớ của process trong user mode, có thể là trong một buffer hoặc mảng.
 
-2. Tạo socket và kết nối (User Mode & Kernel Mode)
+### b. Tạo socket và kết nối (User Mode & Kernel Mode)
 Ứng dụng cần tạo một socket để bắt đầu giao tiếp với một server qua mạng. Để thực hiện điều này, ứng dụng sử dụng các system call.
-2.1 Tạo socket (socket())
+#### Tạo socket (socket())
 - User mode: Ứng dụng gọi hàm socket() để yêu cầu kernel tạo một socket.
 - Kernel mode: Kernel thực hiện các bước sau:
     - Cấp phát bộ nhớ và tài nguyên cần thiết cho socket.
@@ -75,7 +75,7 @@ Ví dụ về việc truyền, nhận dữ liệu giữa 2 thiết bị qua mạ
 int sockfd = socket(AF_INET, SOCK_STREAM, 0); 
 ```
 
-2.2 Kết nối tới server (connect())
+#### Kết nối tới server (connect())
 - User mode: Ứng dụng gọi hàm connect() để thiết lập kết nối với server.
 - Kernel mode: Kernel thực hiện: Đối với TCP: Khởi tạo quá trình TCP 3-way handshake để thiết lập kết nối.
     - Gửi gói tin SYN từ client tới server.
@@ -91,7 +91,7 @@ inet_pton(AF_INET, "192.168.1.1", &server_addr.sin_addr);
 connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
 ```
 
-3. Gửi dữ liệu (send() - User Mode)
+### c. Gửi dữ liệu (send() - User Mode)
 Khi kết nối đã được thiết lập, ứng dụng gửi dữ liệu qua socket.
 - User mode: Ứng dụng gọi hàm send() để truyền dữ liệu qua socket. Dữ liệu trong bộ nhớ của ứng dụng được sao chép vào kernel buffer.
 - Kernel sẽ tiếp nhận dữ liệu và chuẩn bị đóng gói dữ liệu trước khi truyền qua mạng.
@@ -101,15 +101,15 @@ const char *message = "Hello, Server!";
 send(sockfd, message, strlen(message), 0);
 ```
 
-4. Đóng gói dữ liệu trong kernel (Kernel Mode)
+### d. Đóng gói dữ liệu trong kernel (Kernel Mode)
 Sau khi dữ liệu đã được sao chép vào kernel buffer, kernel tiến hành đóng gói dữ liệu để gửi qua mạng bằng việc gửi qua networkstack subsystem của kernel mode (qua mỗi layer của networkstack sẽ đóng gói thêm header tương ứng)
 
-5. Gửi dữ liệu tới phần cứng (NIC - Kernel Mode)
+### e. Gửi dữ liệu tới phần cứng (NIC - Kernel Mode)
 Kernel:
 - Gói tin đã được đóng gói sẽ được gửi xuống driver của NIC (Network Interface Controller).
 - NIC chuyển đổi gói tin thành các tín hiệu điện (Ethernet) hoặc tín hiệu vô tuyến (Wi-Fi) để truyền qua mạng.
 
-6. Truyền dữ liệu qua mạng (Physical Medium)
+### f. Truyền dữ liệu qua mạng (Physical Medium)
 Dữ liệu sẽ được truyền qua mạng, bao gồm các AP, switch và router.
 - Switch: Dựa trên địa chỉ MAC trong header Ethernet, chuyển tiếp gói tin đến đúng thiết bị trong mạng LAN (truyền có dây).
 - AP: Dựa trên địa chỉ MAC trong header Wi-Fi, chuyển tiếp gói tin đến đúng thiết bị trong mạng LAN (truyền không dây).
@@ -117,7 +117,7 @@ Dữ liệu sẽ được truyền qua mạng, bao gồm các AP, switch và rou
     - Đọc thông tin từ header IP để xác định đường đi của gói tin.
     - Chuyển tiếp gói tin đến địa chỉ IP đích trong mạng WAN.
 
-7. Thiết bị nhận xử lý dữ liệu
+### g. Thiết bị nhận xử lý dữ liệu
 Khi gói tin đến thiết bị nhận, quá trình ngược lại diễn ra. Gói tin sẽ được gửi tới NIC của thiết bị đích:
 - Kernel: Sẽ lần lượt đi tới NIC -> networkstack -> ...(các thành phần của kernel).
 - User: Dữ liệu được gửi tới ứng dụng tương ứng qua một buffer.
