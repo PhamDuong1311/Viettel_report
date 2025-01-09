@@ -56,21 +56,21 @@ ARP là một giao thức mạng giúp ánh xạ địa chỉ IP sang địa ch�
 - **Giao tiếp giữa daemon và CLI**: CLI gửi yêu cầu ARP request đến daemon thông qua cơ chế IPC (Inter-process communication) và daemon sẽ phản hồi ARP reply.
 ### 2.3 Implementation
 - **Daemon ARP**:
- + Tạo daemon: Daemon sẽ chạy dưới dạng một process nền. Nó sẽ lắng nghe các yêu cầu từ CLI thông qua IPC.
- + ARP Request/Reply: Khi nhận được yêu cầu ARP, daemon sẽ sử dụng`ioctl()` để gửi ARP request và nhận ARP reply.
- + Lưu trữ ARP cache: Daemon sẽ lưu các địa chỉ MAC trong ARP cache và mỗi entry sẽ có thời gian sống là 15 giây.
- + Timeout: Sau 15 giây, các mục trong ARP cache sẽ tự động bị xóa.
- + Giao tiếp với CLI: Daemon và CLI giao tiếp qua cơ chế IPC.
+  + Tạo daemon: Daemon sẽ chạy dưới dạng một process nền. Nó sẽ lắng nghe các yêu cầu từ CLI thông qua IPC.
+  + ARP Request/Reply: Khi nhận được yêu cầu ARP, daemon sẽ sử dụng`ioctl()` để gửi ARP request và nhận ARP reply.
+  + Lưu trữ ARP cache: Daemon sẽ lưu các địa chỉ MAC trong ARP cache và mỗi entry sẽ có thời gian sống là 15 giây.
+  + Timeout: Sau 15 giây, các mục trong ARP cache sẽ tự động bị xóa.
+  + Giao tiếp với CLI: Daemon và CLI giao tiếp qua cơ chế IPC.
 - **CLI**:
- + CLI sẽ nhận lệnh từ người dùng để yêu cầu ARP request từ daemon.
- + CLI sẽ gửi yêu cầu ARP đến daemon qua IPC.
- + CLI sẽ hiển thị kết quả ARP reply mà daemon trả lại.
+  + CLI sẽ nhận lệnh từ người dùng để yêu cầu ARP request từ daemon.
+  + CLI sẽ gửi yêu cầu ARP đến daemon qua IPC.
+  + CLI sẽ hiển thị kết quả ARP reply mà daemon trả lại.
 - **Giao tiếp IPC**:
- + Sử dụng Unix Domain Sockets hoặc Named Pipes để giao tiếp giữa CLI và daemon.
+  + Sử dụng Unix Domain Sockets hoặc Named Pipes để giao tiếp giữa CLI và daemon.
 - **Gửi ARP Request khi CLI được trigger**:
- + Daemon có thể gửi ARP request tới các interface của hệ thống để kiểm tra và cập nhật ARP cache của chính nó.
+  + Daemon có thể gửi ARP request tới các interface của hệ thống để kiểm tra và cập nhật ARP cache của chính nó.
 - **Cơ chế ioctl**:
- + Sử dụng `ioctl` để tương tác với giao diện mạng của hệ thống và thực hiện việc gửi ARP request.
+  + Sử dụng `ioctl` để tương tác với giao diện mạng của hệ thống và thực hiện việc gửi ARP request.
 ### 2.4 Flowchart
 
 ![image](https://github.com/user-attachments/assets/de17fca0-b4f2-4f57-98fe-48356cee1c4e)
