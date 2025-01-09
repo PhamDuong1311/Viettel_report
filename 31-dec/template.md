@@ -2,13 +2,10 @@
 ## For <project name>
 
 Version 0.1
-Prepared by <author>  
-<organization>  
-<date created>  
-
+Prepared by Pham Hong Duong  
+ 
 Table of Contents
 =================
-* [Revision History](#revision-history)
 * 1 [Introduction](#1-introduction)
   * 1.1 [Document Purpose](#11-document-purpose)
   * 1.2 [Product Scope](#12-product-scope)
@@ -34,97 +31,92 @@ Table of Contents
     * 2.2.14 [Deployment](#2214-deployment)
     * 2.2.15 [Concurrency](#2215-concurrency)
     * 2.2.16 [Behavioral](#2216-behavioral)
-  * 2.3 [Design Views](#23-design-views)
+    * 2.2.17 [Test cases](#2217-test-cases)
 * 3 [Appendixes](#3-appendixes)
 
-## Revision History
-| Name | Date    | Reason For Changes  | Version   |
-| ---- | ------- | ------------------- | --------- |
-|      |         |                     |           |
-|      |         |                     |           |
-|      |         |                     |           |
-
 ## 1. Introduction
-> This section should provide an overview of the entire document
-
+Document này là cung cấp mô tả thiết kế phần mềm cho việc implement giao thức **ARP** trong **userspace** bằng **raw socket**. Document sẽ mô tả các yêu cầu, thiết kế, và các chi tiết implement phần mềm **ARP**, giúp lập trình viên và người phát triển hiểu rõ về cách hệ thống hoạt động và tương tác với mạng.
 ### 1.1 Document Purpose
-Describe the purpose of the SDD and its intended audience.
-
+Sản phẩm này sẽ triển khai giao thức **ARP** trong **userspace**, sử dụng **raw socket** để nhận và gửi các gói **ARP Request** và **ARP Reply**. Các chức năng chính bao gồm:
+- Quản lý **ARP cache** với **timeout** là `15` giây.
+- Gửi và nhận các gói **ARP Request** và **ARP Reply**.
+- Tương tác với hệ thống mạng mà không thông qua **kernel network stack**.
 ### 1.2 Subject Scope
-<!-- TODO -->
 
 ### 1.3 Definitions, Acronyms and Abbreviations
-
+- **ARP**: Address Resolution Protocol, giao thức mapping địa chỉ IP -> địa chỉ MAC thuộc L2 trong cùng 1 network.
+- **Raw Socket**: Loại socket nhận data từ L2 trong kernel network stack và bypass lên thẳng userspace.
+- **Cache Timeout**: Thời gian sống của một entry trong ARP table để lookup sự mapping giữa địa chỉ IP và địa chỉ MAC, sau thời gian này entry sẽ bị xóa.
 ### 1.4 References
-List any other documents or Web addresses to which this SDD refers. Provide enough information so that the reader could access a copy of each reference, including title, author, version number, date, and source or location.
-
+- RFC 826 - "Ethernet Address Resolution Protocol"
+- "Unix Network Programming" - Example of Raw Sockets
+- "Linux Interface Programming"
+- etc... 
 ### 1.5 Document Overview
-Describe what the rest of the document contains and how it is organized.
-
+Tài liệu này được chia thành các phần sau:
+- Phần 1: Mục đích tài liệu và mô tả hệ thống.
+- Phần 2: Thiết kế phần mềm chi tiết.
+- Phần 3: Các phụ lục và tài liệu tham khảo.
 ## 2. Design
-> This section is the body of the SDD and should detail the nature and approach of the design.
-
 ### 2.1 Stakeholder Concerns
-> Identify the different type of stakeholders to whom the SDD will be of interest and their concerns on the design subject. For example, on a prescriptive design, software developers are one of the main stakeholders and their concerns could be functionality and software interoperability, whereas operators may be more concerned with configurability and deployment options.
-
-> Usual design stakeholders include users, developers, operators, software designers, system integrators, maintainers, acquirers, and project managers. Design concerns are usually aligned with functional or non-functional properties like functionality, reliability, performance, or maintainability. Concerns can also be more specific or abstract like the feasibility of constructing and deploying the system, or e potential risks and impacts of the system to its stakeholders throughout its life cycle.
-
-> The specific stakeholders entries should:
-* Be identifiable.
-* State their design concerns.
-* Reference the design views that address such concerns.
 
 ### 2.2 Selected Viewpoints
-> Identify and describe the viewpoints that were selected in order to address the stakeholders' concern identified in section 2.1. A viewpoint defines the perspective from which a design view is taken. Each selected viewpoint should state what concerns it addresses and identify the visualization language(s) it uses to do so.
-
-> For example in order to address interoperability concerns an SDD author may choose to utilize an Interface viewpoint. The author must then also choose which visualization languages are appropriate for that viewpoint and the design subject, some options may be UML Component diagrams, Interface Definition Language (IDL), or OpenAPI specification.
-
-> See IEEE 1016-1998
-
 #### 2.2.1 Context
-Helps describe the design subject as a black box. It can depict the subject in terms of offered services, actors, system boundaries, and design subject's scope. Example visualization languages include UML use case diagram.
-
+Thiết kế này định nghĩa một ứng dụng trong không gian người dùng, tương tác trực tiếp với mạng thông qua raw socket. Hệ thống sẽ nhận các gói ARP từ mạng, xử lý chúng, và gửi lại phản hồi nếu cần thiết.
 #### 2.2.2 Composition
-Describes the way the design subject is (recursively) structured into constituent subsystems and (pluggable) components, buy vs. build, reuse of components. Can be broken down into Logical and Physical composition viewpoints. Example visualization languages include UML package diagram, UML component diagram, UML deployment diagram.
-
+Ứng dụng sẽ có các thành phần sau:
+Raw Socket - Dùng để nhận và gửi gói ARP.
+ARP Cache - Lưu trữ các mục ARP, bao gồm địa chỉ MAC và IP.
+Quản lý thời gian sống - Cơ chế kiểm tra và xóa mục ARP cache khi hết hạn
 #### 2.2.3 Logical
-Describes static structure such as classes, interfaces, and their relationships. Example visualization languages include UML class diagram, and UML object diagram.
-
+Các thành phần logic chính:
+Socket Layer: Tạo và quản lý raw socket.
+ARP Handler: Xử lý ARP request và reply.
+Cache Manager: Quản lý ARP cache, bao gồm thêm, xóa và kiểm tra thời gian sống của cache.
 #### 2.2.4 Dependency
-Interconnection, sharing, and parameterization
-
+Raw socket: Sử dụng raw socket trong không gian người dùng.
+ARP Cache: Quản lý bộ nhớ đệm ARP để lưu trữ các mục và thời gian sống của chúng.
+Time Management: Cơ chế để kiểm tra và xử lý cache timeout
 #### 2.2.5 Information
-<!-- TODO -->
+Thông tin cần lưu trữ trong ARP cache bao gồm:
+Địa chỉ IP.
+Địa chỉ MAC.
+Thời gian thêm mục vào cache.
 #### 2.2.6 Patterns
-<!-- TODO -->
+
 #### 2.2.7 Interface
-<!-- TODO -->
+Giao diện chương trình sẽ sử dụng các API raw socket chuẩn như socket(), recvfrom(), sendto(). Ngoài ra, sẽ có giao diện dòng lệnh để người dùng kiểm tra ARP cache.
 #### 2.2.8 Structure
-<!-- TODO -->
+3.2.7 Structure
+ARP Cache: Cấu trúc lưu trữ dữ liệu ARP.
+Raw Socket Management: Quản lý các raw socket để nhận và gửi gói ARP.
+Timeout Handler: Kiểm tra và xóa các mục trong cache khi hết thời gian.
 #### 2.2.9 Interaction
-<!-- TODO -->
+Ứng dụng nhận các gói ARP từ raw socket, sau đó phân tích và kiểm tra các yêu cầu ARP.
+Nếu là ARP request, chương trình trả lời bằng ARP reply và thêm thông tin vào cache.
 #### 2.2.10 State dynamics
-<!-- TODO -->
+Ứng dụng có các trạng thái:
+Idle: Chương trình chờ nhận gói ARP.
+Processing: Chương trình xử lý gói ARP (Request hoặc Reply).
+Cache Management: Quản lý ARP cache, kiểm tra và loại bỏ các mục hết hạn.
 #### 2.2.11 Algorithm
-<!-- TODO -->
+Ứng dụng có các trạng thái:
+Idle: Chương trình chờ nhận gói ARP.
+Processing: Chương trình xử lý gói ARP (Request hoặc Reply).
+Cache Management: Quản lý ARP cache, kiểm tra và loại bỏ các mục hết hạn.
 #### 2.2.12 Resources
-<!-- TODO -->
+Bộ nhớ: Quản lý bộ nhớ ARP cache.
+Raw socket: Để nhận và gửi gói ARP.
+Thời gian sống (Timeout): Để quản lý cache.
 #### 2.2.13 Physical
-<!-- TODO -->
+Ứng dụng sẽ chạy trên hệ điều hành Linux với raw socket hỗ trợ
 #### 2.2.14 Deployment
-<!-- TODO -->
+Ứng dụng sẽ được triển khai trên máy chủ Linux, yêu cầu quyền root để tạo và sử dụng raw socket.
 #### 2.2.15 Concurrency
-<!-- TODO -->
+Ứng dụng sẽ sử dụng một luồng đơn để nhận và xử lý các gói ARP. Quản lý ARP cache và xử lý timeout sẽ được thực hiện trong cùng một luồng.
 #### 2.2.16 Behavioral
-<!-- TODO -->
-
-### 2.3 Views
-> This sub-section, depending on the nature of the design activity, should contain enough information to implement the product (prescriptive architecture) or enough information for others to understand how to maintain or adapt the existing product (descriptive architecture).
-
-> The specific views should:
-* Be uniquely identifiable
-* Identify the viewpoint of which it is an instance
-* Provide the view representation according to the viewpoint languages
-* Record the relevant design decisions made as they relate to the presented view's elements, see IEEE 42010:2011 5.8.2
+Chương trình sẽ hoạt động liên tục, nhận và xử lý các gói ARP, đồng thời quản lý ARP cache và xử lý timeout.
+#### 2.2.17 Test cases
 
 ## 3. Appendixes
+Phụ lục có thể bao gồm các tài liệu tham khảo, mã nguồn chi tiết, và các ví dụ về cách sử dụng hệ thống.
