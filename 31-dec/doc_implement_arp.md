@@ -1,5 +1,5 @@
 # Software Design Description
-## For ARP Implementation using Raw SocketSocket
+## For ARP Implementation using Raw Socket
 
 Version 0.1
 Prepared by Pham Hong Duong  

@@ -1,1 +1,1 @@
-gcc ARP.c -o ARP -lm
+gcc daemon.c -o daemon
