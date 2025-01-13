@@ -16,13 +16,13 @@ Table of Contents
     * 2.2 [Logical](#22-logical)
     * 2.3 [Implementation](#23-implementation)
     * 2.4 [Flowchart](#24-flowchart)
-    * 2.5 [Communication Diagram]
-    * 2.6 [Algorithm flowchart]
-    * 2.7 [The mechanisms used use]
-    * 2.8 [Feature](#25-feature)
-    * 2.9 [Prerequisites]
-    * 2.10 [File Description]
-    * 2.11 [Running the code]
+    * 2.5 [Communication Diagram](#25-communication-diagram)
+    * 2.6 [Algorithm flowchart](#26-algorithm-flowchart)
+    * 2.7 [The mechanisms used use](#27-the-mechanisms-used-use)
+    * 2.8 [Feature](#28-feature)
+    * 2.9 [Prerequisites](#29-prerequisites)
+    * 2.10 [File Description](#210-file-description)
+    * 2.11 [Running the code](#211-running-the-code)
 
 ## 1. Introduction
 Document này là cung cấp mô tả thiết kế phần mềm cho việc implement giao thức **ARP** trong **userspace** bằng **raw socket**. Document sẽ mô tả các yêu cầu, thiết kế, và các chi tiết implement phần mềm **ARP** => giúp hiểu rõ về cách hệ thống hoạt động và tương tác với mạng.
