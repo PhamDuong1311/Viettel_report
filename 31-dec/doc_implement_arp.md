@@ -86,15 +86,72 @@ Tài liệu này được chia thành các phần sau:
 
 ![image](https://github.com/user-attachments/assets/53fa10a7-fa45-43e0-b8b7-344429a942cd)
 
-### 2.6 Algorithms Diagrams
+### 2.6 Algorithm flowchart
 
+![image](https://github.com/user-attachments/assets/71c57c00-c2ac-488c-8911-9be350ec2540)
 
 
 ### 2.7 The mechanisms used use
 #### a. IPC
+Dựa vào lưu đồ thuật toán trên, ta có thể thấy đặc điểm của **ICP** đó là:
+- Hai chiều giao tiếp:
+   - **CLI** gửi request (IP addr cần query) đến **Daemon**.
+   - **Daemon** gửi phản hồi (MAC addr hoặc "failed") lại **CLI**.
+- Mở rộng rằng nhiều **CLI** có thể giao tiếp đồng thời với **Daemon**:
+   - Mỗi **CLI** có thể gửi yêu cầu riêng và đợi phản hồi từ **Daemon**.
+   - **Daemon** xử lý tuần tự hoặc song song từng yêu cầu.
 
+=> Từ những đặc điểm đó, em lựa chọn cơ chế **Message queue** với ưu điểm:
+- Phân biệt **CLI** dễ dàng: Mỗi **CLI** có thể sử dụng type để định danh message (vd: type = `PID` của **CLI**).
+- Độc lập giữa các **CLI**: Message Queue đảm bảo các **CLI** không truy cập sai thông điệp của nhau.
+
+**Cách triển khai:**
+- **CLI**:
+   - Gửi request vào Message Queue chính với type là `PID` của **CLI**.
+   - Đợi phản hồi với type tương ứng trong queue.
+- **Daemon**:
+  - Đọc thông điệp từ hàng đợi chung.
+  - Xử lý ARP hoặc tìm trong cache.
+  - Gửi phản hồi vào hàng đợi với type tương ứng `PID` của **CLI**.
+ 
+**Cấu trúc message:**
+
+```c
+struct message {
+    long type;          // PID của CLI
+    char data[256];     // Dữ liệu (vd: IP addr hoặc MAC addr/failed)
+};
+```
+ 
 #### b. ARP cache
 
+```c
+struct arp_entry {
+    char ip_addr[16];        
+    char mac_addr[18];       
+    time_t timestamp;        
+};
+```
+
+Lựa chọn Hash map, bởi vì em thấy rằng dữ liệu được lưu trữ phụ thuộc vào IP addr, nên coi IP addr sẽ là key và cặp (MAC addr và timestamp) sẽ là value, dưới đây là mô tả:
+- Key: Địa chỉ IP (string hoặc số nguyên sau khi chuyển đổi từ IP).
+- Value: Cấu trúc arp_entry chứa MAC addr và timestamp.
+- Sử dụng hash function để ánh xạ IP addr thành vị trí trong bảng.
+
+```c
+struct arp_entry {
+    char ip_addr[16];      // Địa chỉ IP (key)
+    char mac_addr[18];     // Địa chỉ MAC
+    time_t timestamp;      // Thời điểm lưu entry
+    UT_hash_handle hh;     // Cấu trúc hỗ trợ trong uthash
+};
+```
+
+**Ưu điểm**:
+- Dễ dàng kiểm tra xem IP addr đã tồn tại hay chưa.
+- Phù hợp với ARP cache vì số lượng phần tử không quá lớn.
+
+(Chưa xét tới vấn đề **Độ phức tạp của thuật toán**).
 ### 2.8 Features
 ### 2.9 Prerequisites
 ### 2.10 File Description
