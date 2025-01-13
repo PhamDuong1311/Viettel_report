@@ -16,6 +16,7 @@ Table of Contents
     * 2.2 [Logical](#22-logical)
     * 2.3 [Implementation](#23-implementation)
     * 2.4 [Flowchart](#24-flowchart)
+    * 
     * 2.5 [Feature](#25-feature)
     * 2.6 [Prerequisites](#26-prerequisites)
     * 2.7 [File Description](#27-file-description)
@@ -81,8 +82,21 @@ Tài liệu này được chia thành các phần sau:
 - **Daemon nhận ARP Reply**: Daemon nhận ARP Reply từ thiết bị mạng với IP-MAC cần thiết.
 - **Daemon trả kết quả cho CLI**: Daemon gửi thông tin ARP Reply (IP-MAC) về cho CLI.
 - **Daemon lưu vào ARP Cache**: Daemon lưu thông tin IP-MAC vào ARP cache theo 1 data structure (linked-list hoặc hash table phù hợp) và gán timeout cho mục đó.
-### 2.5 Features
-### 2.6 Prerequisites
-### 2.7 File Description
-### 2.8 Running the code
+### 2.5 Communication Diagram
+
+![image](https://github.com/user-attachments/assets/53fa10a7-fa45-43e0-b8b7-344429a942cd)
+
+### 2.6 Algorithms Diagrams
+
+
+
+### 2.7 The mechanisms used use
+#### a. IPC
+
+#### b. ARP cache
+
+### 2.8 Features
+### 2.9 Prerequisites
+### 2.10 File Description
+### 2.11 Running the code
 
